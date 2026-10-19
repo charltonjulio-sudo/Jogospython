@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guia do Jogador · Python Nível 1</title>
+<style>
+:root{--ink:#1d2433;--mut:#5d6678;--pap:#fbfaf7;--line:#e4e0d6;--blue:#2a5d8f;--yel:#ffd43b;--grn:#2f9e5a;--red:#c0392b;--vio:#6d3fc0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#efece5;color:var(--ink);font:18px/1.6 "Segoe UI",Roboto,"Noto Sans",Ubuntu,Arial,sans-serif}
+.page{max-width:780px;margin:0 auto;background:var(--pap);min-height:100vh;padding:0 20px 60px}
+nav.top{position:sticky;top:0;z-index:5;background:#14213d;margin:0 -20px;padding:8px 14px;display:flex;gap:6px;overflow-x:auto}
+nav.top a{flex:none;color:#fff;text-decoration:none;font-size:14px;font-weight:700;background:#ffffff1c;border-radius:999px;padding:6px 12px}
+nav.top a:hover{background:var(--yel);color:#14213d}
+header.capa{padding:34px 0 10px}
+.kick{font-size:14px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.07em}
+h1{font-size:clamp(34px,8vw,50px);line-height:1.05;margin:8px 0 10px}
+h1 span{background:linear-gradient(transparent 60%,var(--yel) 60%)}
+h2{font-size:30px;line-height:1.15;margin:0 0 6px}
+h3{font-size:21px;margin:28px 0 8px}
+p{margin:0 0 14px}
+.fase{border-top:6px solid var(--blue);margin-top:40px;padding-top:24px;scroll-margin-top:50px}
+.fase-tag{display:inline-block;background:#14213d;color:var(--yel);font-weight:900;font-size:14px;letter-spacing:.06em;border-radius:8px;padding:4px 10px;margin-bottom:8px}
+.meta{color:var(--mut);font-size:15px;margin-bottom:18px}
+.box{border-radius:14px;padding:14px 16px;margin:16px 0;border:2px solid}
+.box b:first-child{display:block;margin-bottom:4px}
+.dica{background:#eef6ff;border-color:#b9d4f0}
+.alerta{background:#fff6cc;border-color:#f1d36b}
+.erro{background:#fff1f1;border-color:#f2c4c4}
+.balao{position:relative;background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px 16px;margin:16px 0 16px 64px}
+.balao::before{content:attr(data-who);position:absolute;left:-62px;top:0;font-size:40px;line-height:1}
+.balao::after{content:"";position:absolute;left:-12px;top:16px;border:10px solid transparent;border-right-color:var(--line);border-left:0}
+.ex{margin:14px 0}
+.ex pre{margin:0;font:15.5px/1.55 "Cascadia Code",Consolas,"DejaVu Sans Mono",monospace;white-space:pre-wrap;word-break:break-word}
+.py{background:#1e1f24;color:#e6e6e6;border-radius:12px 12px 0 0;padding:12px 14px;position:relative}
+.py::before{content:"▶ Python";display:block;font:12px "Segoe UI",Arial,sans-serif;color:#9aa;margin-bottom:4px}
+.out{background:#2f3138;color:#f1f1f1;border-radius:0 0 12px 12px;padding:10px 14px;border-top:1px dashed #555}
+.out::before{content:"Na tela:";display:block;font:12px "Segoe UI",Arial,sans-serif;color:#9fd3a6;margin-bottom:2px}
+.out.err{background:#3a2326;color:#ffd0d0}.out.err::before{content:"Erro:";color:#ffb3b3}
+.ex.solo .py{border-radius:12px}
+.t-kw{color:#569cd6}.t-fn{color:#dcdcaa}.t-str{color:#ce9178}.t-num{color:#b5cea8}.t-com{color:#6a9955}.t-id{color:#9cdcfe}.t-op{color:#d4d4d4}.t-brace{color:#da70d6;font-weight:700}.t-var{color:#9cdcfe}
+code.ic{font-family:"Cascadia Code",Consolas,"DejaVu Sans Mono",monospace;background:#e9edf3;color:#173a5e;padding:1px 6px;border-radius:6px;font-size:.88em}
+table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:16px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#14213d;color:#fff}
+tr:nth-child(even) td{background:#f4f1ea}
+.passo{display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+.passo .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--grn);color:#fff;font-weight:800;display:grid;place-items:center}
+.flow{display:grid;gap:8px;margin:16px 0}
+.flow .st{display:flex;gap:12px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 14px}
+.flow .st .k{flex:none;font-size:26px}
+.flow .arr{text-align:center;color:var(--blue);font-size:22px;line-height:1}
+.quiz{background:#f5efff;border:2px solid #d9c8f7;border-radius:16px;padding:14px 16px;margin:18px 0}
+.quiz>b{color:var(--vio)}
+.quiz ol{margin:8px 0 0;padding-left:22px}.quiz li{margin:10px 0}
+details{margin-top:6px}
+summary{cursor:pointer;color:var(--vio);font-weight:700}
+details p{margin:6px 0 0;background:#fff;border-radius:10px;padding:8px 12px}
+.check{list-style:none;padding:0;margin:10px 0}
+.check li{margin:6px 0}
+.check label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.check input{width:22px;height:22px;margin-top:3px;flex:none;accent-color:var(--grn)}
+.boss{background:#14213d;color:#fff;border-radius:18px;padding:18px;margin:20px 0}
+.boss h3{margin-top:0;color:var(--yel)}
+.boss table td{background:#fff;color:var(--ink)}.boss table tr:nth-child(even) td{background:#f4f1ea}
+.boss code.ic{background:#ffffff22;color:#fff}
+.sym{font:700 24px "Cascadia Code",Consolas,monospace;color:var(--blue);white-space:nowrap}
+.fim{text-align:center;margin-top:40px;color:var(--mut);font-size:15px}
+td code.ic{word-break:break-word}
+@media (max-width:520px){body{font-size:17px}table{font-size:14px}th,td{padding:6px 6px}.sym{font-size:18px}.balao{margin-left:52px}.balao::before{left:-52px;font-size:34px}}
+@media print{
+  body{background:#fff;font-size:12pt}.page{max-width:none;padding:0}nav.top{display:none}
+  .fase{break-before:page}.ex,.box,.quiz,.boss,table{break-inside:avoid}
+  details{display:block}details>summary{display:none}details p{display:block}
+  .boss{background:#fff;color:#000;border:2px solid #000}.boss h3{color:#000}
+}
+</style></head><body><div class="page">
+<nav class="top"><a href="index.html">⬅ Site</a><a href="#inicio">🏠 Início</a><a href="#f1">Fase 1</a><a href="#f2">Fase 2</a><a href="#f3">Fase 3</a><a href="#erros">Erros</a><a href="#simbolos">Símbolos</a><a href="jogo.html">🎮 Jogo</a></nav>
+
+<header class="capa" id="inicio">
+  <div class="kick">Guia do Jogador · Introdução ao Python</div>
+  <h1>Python <span>Nível 1</span></h1>
+  <p>Este guia prepara você para as três primeiras aulas de Python. Cada fase é uma aula. Leia <b>uma fase por vez</b>, com calma: dá uns 15 minutos cada.</p>
+  <div class="balao" data-who="🧙"><b>Como usar este guia:</b> antes de abrir uma resposta, tente responder de cabeça ou no papel. Errar aqui não tira ponto nenhum. É treino.</div>
+  <h3>✅ Checklist de habilidades</h3>
+  <p class="meta">Marque quando sentir que já sabe. Fica salvo neste navegador.</p>
+  <ul class="check" id="check">
+    <li><label><input type="checkbox" data-k="c1"><span>Sei criar um caderno no Google Colab e rodar uma célula</span></label></li>
+    <li><label><input type="checkbox" data-k="c2"><span>Sei usar <code class="ic">print()</code> para mostrar um texto</span></label></li>
+    <li><label><input type="checkbox" data-k="c3"><span>Sei criar uma variável e mostrar ela com f-string</span></label></li>
+    <li><label><input type="checkbox" data-k="c4"><span>Sei a diferença entre <code class="ic">10</code> e <code class="ic">"10"</code></span></label></li>
+    <li><label><input type="checkbox" data-k="c5"><span>Sei fazer contas com <code class="ic">+</code>, <code class="ic">*</code>, <code class="ic">//</code> e <code class="ic">%</code></span></label></li>
+    <li><label><input type="checkbox" data-k="c6"><span>Sei pedir um número para quem usa o programa com <code class="ic">int(input())</code></span></label></li>
+  </ul>
+</header>
+
+<!-- ================= FASE 1 ================= -->
+<section class="fase" id="f1">
+  <span class="fase-tag">FASE 1 · AULA 1</span>
+  <h2>Google Colab e print()</h2>
+  <p class="meta">Você vai aprender: o que é o Colab · como mostrar texto na tela · o que é uma variável</p>
+
+  <h3>🗺️ O Colab é o seu campo de treino</h3>
+  <p>O <b>Google Colab</b> é um site onde você escreve e roda Python sem instalar nada. Você entra com sua conta Google e o seu caderno (chamado <i>notebook</i>) fica salvo no Google Drive.</p>
+  <p>O caderno é feito de <b>células</b>. Existem dois tipos:</p>
+  <table><tr><th>Célula</th><th>Para que serve</th></tr>
+  <tr><td>💻 Código</td><td>Onde você escreve Python. O botão ▶ ao lado roda o código.</td></tr>
+  <tr><td>📝 Texto</td><td>Para anotar e organizar, como títulos. Não roda Python.</td></tr></table>
+
+  <h3>Como criar seu caderno</h3>
+  <div class="passo"><span class="n">1</span><div>Acesse <b>colab.research.google.com</b> e entre com sua conta Google.</div></div>
+  <div class="passo"><span class="n">2</span><div>Clique em <b>Novo notebook</b>.</div></div>
+  <div class="passo"><span class="n">3</span><div>No canto de cima, à esquerda, clique no nome <b>Untitled0</b> e troque para <b>Introdução ao Python</b>.</div></div>
+  <div class="passo"><span class="n">4</span><div>Já existe uma célula de código pronta. É nela que você vai escrever.</div></div>
+
+  <h3>🗨️ print(): fazer o computador falar</h3>
+  <p><code class="ic">print()</code> mostra uma mensagem na tela. O texto vai <b>entre aspas</b>. Em programação, texto se chama <b>string</b>.</p>
+  <div class="ex"><pre class="py">print("I Competição de Programação da Start")</pre><pre class="out">I Competição de Programação da Start</pre></div>
+  <p>Repare: as aspas <b>não aparecem</b> na tela. Elas só avisam o Python que aquilo é texto.</p>
+  <div class="box erro"><b>⚠️ Armadilha: esquecer as aspas</b>Sem aspas, o Python acha que a palavra é o nome de uma variável que não existe.
+  <div class="ex"><pre class="py">print(Olá)</pre><pre class="out err">NameError: name 'Olá' is not defined</pre></div></div>
+
+  <h3>📦 Variável: uma caixa com nome</h3>
+  <p>Uma variável guarda um valor para usar depois. Pense num baú com uma etiqueta.</p>
+  <div class="ex"><pre class="py">ano = "II"
+print(ano, "Competição de Programação da Start")</pre><pre class="out">II Competição de Programação da Start</pre></div>
+  <p>Leia <code class="ic">ano = "II"</code> assim: <b>"guarde o texto II na variável ano"</b>. O sinal <code class="ic">=</code> aqui não é o "igual" da matemática. Ele significa <b>guardar</b>.</p>
+  <p>No <code class="ic">print</code>, a <b>vírgula</b> separa as partes e o Python coloca um espaço entre elas sozinho.</p>
+  <div class="balao" data-who="🛡️">Se a competição tiver uma terceira edição, basta trocar <code class="ic">"II"</code> por <code class="ic">"III"</code>. O resto do código continua igual. Essa é a vantagem da variável.</div>
+
+  <h3>✨ f-string: variável dentro do texto</h3>
+  <p>Outra forma de juntar texto e variável: coloque a letra <b>f</b> antes das aspas e a variável entre <b>chaves { }</b>.</p>
+  <div class="ex"><pre class="py">ano = "II"
+print(f"{ano} Competição de Programação da Start")</pre><pre class="out">II Competição de Programação da Start</pre></div>
+  <div class="box alerta"><b>📌 Correção do material da aula</b>O material diz que a variável vai "entre colchetes". O certo é <b>entre chaves</b>: <span class="sym">{ }</span>. Colchetes são <span class="sym">[ ]</span> e não funcionam aqui.</div>
+  <div class="box erro"><b>⚠️ Armadilha: esquecer o f</b>Sem o f, as chaves viram texto comum:
+  <div class="ex"><pre class="py">nome = "Ana"
+print("Oi, {nome}!")</pre><pre class="out">Oi, {nome}!</pre></div></div>
+
+  <div class="quiz"><b>🎯 Teste rápido da Fase 1</b><ol>
+   <li>Qual das linhas dá erro: <code class="ic">print("Oi")</code> ou <code class="ic">print(Oi)</code>?
+    <details><summary>Ver resposta</summary><p><code class="ic">print(Oi)</code>. Sem aspas, o Python procura uma variável chamada Oi, que não existe (NameError).</p></details></li>
+   <li>O que aparece na tela com <code class="ic">classe = "Maga"</code> e depois <code class="ic">print(classe, "nível 1")</code>?
+    <details><summary>Ver resposta</summary><p><b>Maga nível 1</b>. A vírgula junta com um espaço.</p></details></li>
+   <li>Que símbolo envolve a variável dentro de uma f-string?
+    <details><summary>Ver resposta</summary><p>As chaves <b>{ }</b>, e a letra f vem antes das aspas.</p></details></li>
+  </ol></div>
+</section>
+
+<!-- ================= FASE 2 ================= -->
+<section class="fase" id="f2">
+  <span class="fase-tag">FASE 2 · AULA 2</span>
+  <h2>Calculando pontos</h2>
+  <p class="meta">Você vai aprender: organizar o caderno · guardar números · somar e multiplicar</p>
+
+  <h3>📝 Organize o caderno com títulos</h3>
+  <p>Numa célula de <b>texto</b>, escreva <code class="ic">## Aula 1</code>. Os dois <code class="ic">##</code> criam um título (isso é linguagem <b>Markdown</b>). Faça o mesmo com <code class="ic">## Aula 2</code> antes do código novo. Assim você acha cada aula rápido.</p>
+
+  <h3>📚 A missão: campanha de leitura</h3>
+  <div class="boss" style="background:#fff6e6;color:var(--ink);border:2px solid #f3c983">
+   <p>A escola dá pontos por livro lido: <b>ficção = 10</b>, <b>não-ficção = 8</b>, <b>infantil = 6</b>. Rodrigo leu <b>um livro de cada</b>. Quantos pontos ele fez?</p>
+  </div>
+  <p>Cada categoria vira uma variável. <b>Número vai sem aspas.</b> Outra variável guarda a soma.</p>
+  <div class="ex"><pre class="py">livro_ficcao = 10
+livro_nficcao = 8
+livro_infantil = 6
+
+pontos_rodrigo = livro_ficcao + livro_nficcao + livro_infantil
+
+print(f"Os pontos totais do Rodrigo são: {pontos_rodrigo}")</pre><pre class="out">Os pontos totais do Rodrigo são: 24</pre></div>
+  <div class="box alerta"><b>📌 Correção do material da aula</b>Aqui o material também fala em "colchetes". De novo: são <b>chaves { }</b>.</div>
+
+  <h3>🔢 Número ou texto? Faz toda a diferença</h3>
+  <table><tr><th>Código</th><th>Na tela</th><th>Por quê</th></tr>
+  <tr><td><code class="ic">print(10 + 8)</code></td><td><b>18</b></td><td>Número + número = soma</td></tr>
+  <tr><td><code class="ic">print("10" + "8")</code></td><td><b>108</b></td><td>Texto + texto = junta</td></tr>
+  <tr><td><code class="ic">print("10" + 8)</code></td><td>TypeError</td><td>Texto + número não mistura</td></tr></table>
+  <div class="ex"><pre class="py">print(10 + 8)</pre><pre class="out">18</pre></div>
+  <div class="ex"><pre class="py">print("10" + "8")</pre><pre class="out">108</pre></div>
+  <div class="ex"><pre class="py">print("10" + 8)</pre><pre class="out err">TypeError: can only concatenate str (not "int") to str</pre></div>
+  <p>Guarde isso: vai ser importante na Fase 3.</p>
+
+  <h3>✖️ Multiplicação</h3>
+  <p>O asterisco <code class="ic">*</code> é a multiplicação. Como na matemática, ela é feita antes da soma.</p>
+  <div class="ex"><pre class="py">livro_ficcao = 10
+livro_infantil = 6
+pontos = 2 * livro_ficcao + livro_infantil
+print(pontos)</pre><pre class="out">26</pre></div>
+
+  <h3>🏷️ Regras para dar nome a variáveis</h3>
+  <table><tr><th>Nome</th><th>Pode?</th><th>Motivo</th></tr>
+  <tr><td><code class="ic">pontos_rodrigo</code></td><td>✅</td><td>Letras minúsculas e _ no lugar do espaço</td></tr>
+  <tr><td><code class="ic">pontos2</code></td><td>✅</td><td>Número no fim pode</td></tr>
+  <tr><td><code class="ic">pontos rodrigo</code></td><td>❌</td><td>Espaço não pode (SyntaxError)</td></tr>
+  <tr><td><code class="ic">2pontos</code></td><td>❌</td><td>Não pode começar com número</td></tr>
+  <tr><td><code class="ic">Nome</code> e <code class="ic">nome</code></td><td>⚠️</td><td>São variáveis <b>diferentes</b>: maiúscula importa</td></tr></table>
+  <div class="balao" data-who="🏹">O Python até aceita acento em nome de variável (<code class="ic">ficção</code>), mas evite. Dá trabalho para digitar e causa confusão.</div>
+
+  <div class="quiz"><b>🎯 Teste rápido da Fase 2</b><ol>
+   <li>O que aparece com <code class="ic">print(10 + 8)</code>? E com <code class="ic">print("10" + "8")</code>?
+    <details><summary>Ver resposta</summary><p><b>18</b> e <b>108</b>. Com aspas, são textos e o + só junta.</p></details></li>
+   <li>Bia leu 3 livros de não-ficção (8 pontos cada) e 2 infantis (6 cada). Quantos pontos?
+    <details><summary>Ver resposta</summary><p>3 × 8 + 2 × 6 = 24 + 12 = <b>36</b>. Em Python: <code class="ic">3 * livro_nficcao + 2 * livro_infantil</code>.</p></details></li>
+   <li>Por que <code class="ic">livro ficcao = 10</code> dá erro?
+    <details><summary>Ver resposta</summary><p>Nome de variável não pode ter espaço. Use <code class="ic">livro_ficcao</code>.</p></details></li>
+  </ol></div>
+</section>
+
+<!-- ================= FASE 3 ================= -->
+<section class="fase" id="f3">
+  <span class="fase-tag">FASE 3 · AULA 3</span>
+  <h2>Distribuindo itens</h2>
+  <p class="meta">Você vai aprender: pedir dados com input() · converter com int() · dividir com // · ver o resto com %</p>
+
+  <h3>🎴 A missão: divisão do tesouro</h3>
+  <div class="boss">
+   <p>Problema adaptado da <b>Olimpíada Brasileira de Informática (OBI) 2020</b>.</p>
+   <p>A turma achou um envelope de figurinhas. João, o dono, propôs: cada amigo recebe <b>a mesma quantidade</b> e João recebe <b>o dobro</b> de um amigo. A divisão é <b>exata</b>: não sobra nem falta.</p>
+   <p>Sabendo o <b>total de figurinhas</b> e o <b>número de amigos</b> (sem contar o João), quantas figurinhas o João recebe?</p>
+  </div>
+
+  <h3>🧠 Primeiro a matemática, depois o código</h3>
+  <p>Se cada amigo recebe <b>x</b>, o João recebe <b>2x</b>. É como se o João contasse por <b>dois amigos</b>. Então dividimos o total em <b>amigos + 2</b> partes iguais:</p>
+  <div class="flow">
+   <div class="st"><span class="k">🧮</span><div><b>cada amigo</b> = total ÷ (amigos + 2)</div></div>
+   <div class="arr">⬇</div>
+   <div class="st"><span class="k">👑</span><div><b>João</b> = 2 × cada amigo</div></div>
+  </div>
+  <p>Exemplo da OBI: 221 figurinhas e 11 amigos → 221 ÷ 13 = <b>17</b> por amigo → João recebe <b>34</b>. Confira: 11 × 17 + 34 = 221. ✔</p>
+
+  <h3>⌨️ input(): o programa pergunta</h3>
+  <p>Até agora os valores estavam escritos no código. Com <code class="ic">input()</code>, o programa <b>para e espera</b> a pessoa digitar e apertar Enter. O texto entre aspas aparece como pergunta.</p>
+  <div class="box alerta"><b>📌 Regra de ouro</b><code class="ic">input()</code> <b>sempre devolve texto</b>, mesmo que a pessoa digite um número. Por isso usamos <code class="ic">int()</code>, que transforma o texto em número inteiro.</div>
+  <p>Leia a linha <b>de dentro para fora</b>:</p>
+  <div class="ex solo"><pre class="py">total_figurinhas = int(input("Digite o total de figurinhas: "))</pre></div>
+  <div class="flow">
+   <div class="st"><span class="k">1️⃣</span><div><code class="ic">input(...)</code> mostra a pergunta e recebe o que a pessoa digitou: o texto <code class="ic">"221"</code></div></div>
+   <div class="arr">⬇</div>
+   <div class="st"><span class="k">2️⃣</span><div><code class="ic">int(...)</code> transforma o texto <code class="ic">"221"</code> no número <code class="ic">221</code></div></div>
+   <div class="arr">⬇</div>
+   <div class="st"><span class="k">3️⃣</span><div><code class="ic">=</code> guarda o número na variável <code class="ic">total_figurinhas</code></div></div>
+  </div>
+  <p>Sem o <code class="ic">int()</code>, acontece aquilo da Fase 2: texto não faz conta.</p>
+  <div class="ex" data-in='["7"]'><pre class="py">x = input()
+print(x + x)</pre><pre class="out">7
+77</pre></div>
+  <div class="ex" data-in='["7"]'><pre class="py">x = int(input())
+print(x + x)</pre><pre class="out">7
+14</pre></div>
+  <p class="meta">Nos exemplos, a primeira linha da tela (7) é o que a pessoa digitou.</p>
+  <div class="box erro"><b>⚠️ Armadilha: digitar letras</b><code class="ic">int()</code> só entende dígitos. Se a pessoa digitar "onze":
+  <div class="ex"><pre class="py">int("onze")</pre><pre class="out err">ValueError: invalid literal for int() with base 10: 'onze'</pre></div></div>
+
+  <h3>➗ Os operadores de conta</h3>
+  <table><tr><th>Símbolo</th><th>Conta</th><th>Exemplo</th><th>Resultado</th></tr>
+  <tr><td class="sym">+</td><td>soma</td><td><code class="ic">7 + 2</code></td><td>9</td></tr>
+  <tr><td class="sym">-</td><td>subtração</td><td><code class="ic">7 - 2</code></td><td>5</td></tr>
+  <tr><td class="sym">*</td><td>multiplicação</td><td><code class="ic">7 * 2</code></td><td>14</td></tr>
+  <tr><td class="sym">/</td><td>divisão</td><td><code class="ic">7 / 2</code></td><td>3.5</td></tr>
+  <tr><td class="sym">//</td><td>divisão inteira</td><td><code class="ic">7 // 2</code></td><td>3</td></tr>
+  <tr><td class="sym">%</td><td>resto da divisão</td><td><code class="ic">7 % 2</code></td><td>1</td></tr></table>
+  <div class="ex"><pre class="py">print(7 + 2, 7 - 2, 7 * 2, 7 / 2, 7 // 2, 7 % 2)</pre><pre class="out">9 5 14 3.5 3 1</pre></div>
+  <p>Repare: o Python usa <b>ponto</b> nos decimais (3.5), não vírgula.</p>
+
+  <h3>🏆 O programa completo</h3>
+  <div class="ex" data-in='["221","11"]'><pre class="py">total_figurinhas = int(input("Digite o total de figurinhas: "))
+numero_amigos = int(input("Digite o número de amigos: "))
+
+figurinhas_amigos = total_figurinhas // (numero_amigos + 2)
+
+figurinhas_joao = 2 * figurinhas_amigos
+
+print(f"João recebeu {figurinhas_joao} figurinhas.")</pre><pre class="out">Digite o total de figurinhas: 221
+Digite o número de amigos: 11
+João recebeu 34 figurinhas.</pre></div>
+  <div class="box alerta"><b>📌 Correções do material da aula</b>
+   1) O texto do material escreve <code class="ic">figurinhas_amigos 2 *</code>. Isso dá <b>SyntaxError</b>. O certo é <code class="ic">2 * figurinhas_amigos</code> (a imagem do código no material está certa).<br>
+   2) <code class="ic">print(f)</code> não existe como função separada: o <b>f</b> faz parte do texto, antes das aspas: <code class="ic">print(f"...")</code>.</div>
+  <div class="box erro"><b>⚠️ Armadilha: tirar os parênteses</b>
+   <code class="ic">total_figurinhas // numero_amigos + 2</code> faz a divisão primeiro e só depois soma 2. Com 221 e 11, o João receberia 44 em vez de 34. Os parênteses em <code class="ic">(numero_amigos + 2)</code> são obrigatórios.</div>
+
+  <h3>🔍 E o exemplo de 100 figurinhas e 5 amigos?</h3>
+  <p>O material testa com 100 e 5 e mostra "João recebeu 28". Mas veja: 100 ÷ 7 dá 14 e <b>sobram 2</b>.</p>
+  <div class="ex"><pre class="py">print(100 // 7, 100 % 7)</pre><pre class="out">14 2</pre></div>
+  <p>O enunciado diz que a divisão é exata, então 100 e 5 <b>não é uma entrada válida</b> para esse problema. O programa não está errado; o teste é que não segue a regra. Com 5 amigos, totais como 70, 77 ou 84 funcionam (múltiplos de 7).</p>
+  <div class="balao" data-who="🧙">Curiosidade: na prova de verdade da OBI, o programa <b>não pode</b> mostrar frases como "Digite o total". A correção é automática e compara só o número da resposta.</div>
+
+  <div class="quiz"><b>🎯 Teste rápido da Fase 3</b><ol>
+   <li>O que <code class="ic">input()</code> sempre devolve?
+    <details><summary>Ver resposta</summary><p>Texto (string). Por isso usamos <code class="ic">int()</code> para fazer contas.</p></details></li>
+   <li>Quanto dá <code class="ic">17 // 5</code> e <code class="ic">17 % 5</code>?
+    <details><summary>Ver resposta</summary><p><b>3</b> e <b>2</b>. O 5 cabe 3 vezes no 17 (15) e sobram 2.</p></details></li>
+   <li>Com 1000 figurinhas e 8 amigos, quanto o João recebe?
+    <details><summary>Ver resposta</summary><p>1000 // (8 + 2) = 100 por amigo. João recebe <b>200</b>.</p></details></li>
+  </ol></div>
+
+  <div class="boss"><h3>🐲 Desafio para levar à aula</h3>
+   <p>Teste seu programa com os três exemplos oficiais da OBI e confira:</p>
+   <table style="color:var(--ink)"><tr><th>Total</th><th>Amigos</th><th>João recebe</th></tr>
+   <tr><td>221</td><td>11</td><td>34</td></tr><tr><td>1000</td><td>8</td><td>200</td></tr><tr><td>3</td><td>1</td><td>2</td></tr></table>
+   <p>Extra: faça o programa mostrar também quanto <b>cada amigo</b> recebeu.</p>
+  </div>
+</section>
+
+<!-- ================= ERROS ================= -->
+<section class="fase" id="erros">
+  <span class="fase-tag">ITENS DE CONSULTA</span>
+  <h2>📕 Livro de erros</h2>
+  <p>Erro não é o fim do jogo. A mensagem diz <b>o tipo</b> do erro e, quase sempre, <b>a linha</b>. Os mais comuns nestas aulas:</p>
+  <table><tr><th>Mensagem</th><th>O que quer dizer</th><th>Como resolver</th></tr>
+  <tr><td><code class="ic">NameError: name 'x' is not defined</code></td><td>Você usou um nome que não existe</td><td>Faltaram aspas? Digitou o nome diferente (maiúscula)? Rodou a célula que cria a variável?</td></tr>
+  <tr><td><code class="ic">SyntaxError: invalid syntax</code></td><td>O código está escrito de um jeito que o Python não entende</td><td>Confira aspas, parênteses, espaço em nome de variável, ordem da conta</td></tr>
+  <tr><td><code class="ic">TypeError: can only concatenate str (not "int") to str</code></td><td>Tentou juntar texto com número</td><td>Use <code class="ic">int()</code> no texto ou uma f-string</td></tr>
+  <tr><td><code class="ic">ValueError: invalid literal for int() with base 10</code></td><td><code class="ic">int()</code> recebeu algo que não é número inteiro</td><td>Digite só dígitos, sem letras e sem ponto</td></tr></table>
+  <div class="box dica"><b>💡 Dica do Colab</b>Se você reiniciar o Colab ou abrir o caderno no dia seguinte, as variáveis somem da memória. Rode de novo as células de cima antes das de baixo.</div>
+</section>
+
+<section class="fase" id="simbolos">
+  <span class="fase-tag">ITENS DE CONSULTA</span>
+  <h2>🔣 Símbolos que confundem</h2>
+  <table><tr><th>Símbolo</th><th>Nome</th><th>Onde aparece nestas aulas</th></tr>
+  <tr><td class="sym">( )</td><td>parênteses</td><td><code class="ic">print(...)</code>, <code class="ic">input(...)</code>, <code class="ic">(numero_amigos + 2)</code></td></tr>
+  <tr><td class="sym">" "</td><td>aspas</td><td>Em volta de texto: <code class="ic">"Olá"</code></td></tr>
+  <tr><td class="sym">{ }</td><td>chaves</td><td>Variável dentro da f-string: <code class="ic">f"{ano}"</code></td></tr>
+  <tr><td class="sym">[ ]</td><td>colchetes</td><td>Ainda não usamos. Não troque pelas chaves!</td></tr>
+  <tr><td class="sym">_</td><td>sublinhado (underline)</td><td>No lugar do espaço em nomes: <code class="ic">numero_amigos</code></td></tr>
+  <tr><td class="sym">#</td><td>cerquilha</td><td>Em célula de texto: título (<code class="ic">## Aula 1</code>)</td></tr></table>
+  <div class="balao" data-who="🎮">Quer treinar jogando? Abra o jogo <a href="jogo.html"><b>Dungeon do Python</b></a>. Ele tem as mesmas coisas deste guia, em forma de batalha.</div>
+  <p class="fim">Guia do Jogador · Python Nível 1 · Educação Digital<br>Para imprimir: Ctrl + P (as respostas aparecem abertas na impressão).</p>
+</section>
+</div>
+<script>
+/* ---------- compartilhado: realce de Python + renderização de slides + sincronização ---------- */
+const SYNC_KEY = 'aula_python_57_59_v1';
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function md(s) {
+  return esc(s)
+    .replace(/`([^`]+)`/g, '<code class="ic">$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+}
+
+const PY_KW = new Set(['if','else','elif','for','while','def','return','import','from','in','and','or','not','True','False','None']);
+const PY_BI = new Set(['print','input','int','str','float','len']);
+function hlStr(tok) {
+  const isF = /^[fF]/.test(tok);
+  const body = isF ? tok.slice(1) : tok;
+  let html = isF ? '<span class="t-kw">' + tok[0] + '</span>' : '';
+  if (!isF) return html + '<span class="t-str">' + esc(body) + '</span>';
+  return html + body.split(/(\{[^{}]*\})/).map(p =>
+    /^\{[^{}]*\}$/.test(p)
+      ? '<span class="t-brace">{</span><span class="t-var">' + esc(p.slice(1, -1)) + '</span><span class="t-brace">}</span>'
+      : '<span class="t-str">' + esc(p) + '</span>'
+  ).join('');
+}
+function hl(src) {
+  const re = /(#[^\n]*)|([fF]?"(?:[^"\\\n]|\\.)*"|[fF]?'(?:[^'\\\n]|\\.)*')|([A-Za-z_À-ÿ][A-Za-z0-9_À-ÿ]*)|(\d+(?:\.\d+)?)|([\s\S])/g;
+  let out = '', m;
+  while ((m = re.exec(src))) {
+    if (m[1]) out += '<span class="t-com">' + esc(m[1]) + '</span>';
+    else if (m[2]) out += hlStr(m[2]);
+    else if (m[3]) {
+      const w = m[3];
+      if (/^[fF]$/.test(w) && /["']/.test(src[re.lastIndex] || '')) { out += esc(w); }
+      else out += PY_KW.has(w) ? '<span class="t-kw">' + w + '</span>'
+        : PY_BI.has(w) ? '<span class="t-fn">' + w + '</span>'
+        : '<span class="t-id">' + esc(w) + '</span>';
+    }
+    else if (m[4]) out += '<span class="t-num">' + m[4] + '</span>';
+    else out += /[=+\-*/%]/.test(m[5]) ? '<span class="t-op">' + esc(m[5]) + '</span>' : esc(m[5]);
+  }
+  return out;
+}
+function codeBox(src, lang) {
+  const body = lang === 'txt' ? esc(src) : hl(src);
+  return '<div class="code"><div class="code-bar"><span class="play">▶</span><span class="lang">' + (lang === 'txt' ? 'Portugol' : 'Python') + '</span></div><pre>' + body + '</pre></div>';
+}
+function outBox(txt, isErr) {
+  return '<div class="out' + (isErr ? ' err' : '') + '"><span class="out-lbl">' + (isErr ? 'Erro' : 'Saída') + '</span><pre>' + esc(txt) + '</pre></div>';
+}
+
+function blocoNome(id) { const b = BLOCOS.find(x => x.id === id); return b ? b.nome : ''; }
+
+function renderSlide(s, idx, revealed) {
+  const n = idx + 1, total = SLIDES.length;
+  const head = s.tipo === 'hero' ? '' :
+    '<div class="s-head"><span class="s-bloco">' + esc(blocoNome(s.b)) + '</span><span class="s-num">' + n + ' / ' + total + '</span></div>';
+  let body = '';
+  if (s.tipo === 'hero') {
+    body = '<div class="hero"><div class="hero-ico">' + s.icone + '</div><div class="hero-k">' + md(s.kicker) + '</div><h1>' + md(s.titulo) + '</h1><div class="hero-sub">' + md(s.sub) + '</div></div>';
+  } else if (s.tipo === 'conteudo') {
+    const itens = '<ul class="itens">' + s.itens.map(i => '<li>' + md(i) + '</li>').join('') + '</ul>';
+    if (s.code) {
+      body = '<h2>' + md(s.titulo) + '</h2><div class="cols' + (s.code.split('\n').length > 3 ? ' wide-code' : '') + '"><div>' + itens + '</div><div>' + codeBox(s.code) + (s.out ? outBox(s.out) : '') + '</div></div>';
+    } else body = '<h2>' + md(s.titulo) + '</h2>' + itens.replace('class="itens"', 'class="itens big"');
+  } else if (s.tipo === 'caso') {
+    body = '<h2><span class="tag tag-caso">Situação-problema</span> ' + md(s.titulo) + '</h2>' +
+      '<div class="caso"><p class="hist">' + md(s.historia) + '</p><ul class="dados">' + s.dados.map(d => '<li>' + md(d) + '</li>').join('') + '</ul>' +
+      '<div class="perg">❓ ' + md(s.pergunta) + '</div>' + (s.fonte ? '<div class="fonte">' + md(s.fonte) + '</div>' : '') + '</div>';
+  } else if (s.tipo === 'quadro') {
+    const cols = s.cols || Math.min(s.cards.length, 4);
+    body = '<h2>' + md(s.titulo) + '</h2><div class="quadro" style="grid-template-columns:repeat(' + cols + ',1fr)">' +
+      s.cards.map(c => '<div class="card' + (c.erro ? ' card-err' : '') + '"><div class="card-cab">' + md(c.cab) + '</div>' +
+        (c.big ? '<div class="card-big">' + esc(c.big) + '</div>' : '') +
+        (c.code ? codeBox(c.code, c.lang) : '') + (c.res ? outBox(c.res, c.erro) : '') +
+        (c.txt ? '<div class="card-txt">' + md(c.txt) + '</div>' : '') + '</div>').join('') + '</div>' +
+      (s.nota ? '<div class="nota">' + md(s.nota) + '</div>' : '');
+  } else if (s.tipo === 'atividade') {
+    const passos = '<ol class="passos">' + s.passos.map(p => '<li>' + md(p) + '</li>').join('') + '</ol>';
+    const resp = s.resposta ? (revealed ? '<div class="resp"><div class="resp-lbl">✅ Uma resposta possível</div>' + codeBox(s.resposta) + outBox(s.out) + '</div>'
+      : '<div class="resp-wait">🔒 A resposta aparece no final</div>') : '';
+    body = '<h2><span class="tag tag-ativ">Mãos no código · ' + s.tempo + ' min</span> ' + md(s.titulo) + '</h2>' +
+      (s.resposta ? '<div class="cols"><div>' + passos + '</div><div>' + resp + '</div></div>' : passos);
+  } else if (s.tipo === 'quiz') {
+    const L = 'ABCD';
+    const ops = '<div class="ops">' + s.opcoes.map((o, k) => {
+      const cls = revealed ? (k === s.correta ? ' ok' : ' no') : '';
+      return '<div class="op' + cls + '"><span class="op-l">' + L[k] + '</span>' + (s.opcoes_code ? '<code class="op-c">' + esc(o) + '</code>' : '<span>' + esc(o) + '</span>') + '</div>';
+    }).join('') + '</div>';
+    body = '<h2><span class="tag tag-quiz">Quiz</span> ' + md(s.pergunta) + '</h2>' +
+      (s.code ? '<div class="cols quiz-cols"><div>' + codeBox(s.code) + '</div><div>' + ops + '</div></div>' : ops) +
+      (revealed ? '<div class="explica">💡 ' + md(s.explica) + '</div>' : '');
+  }
+  return '<div class="slide t-' + s.tipo + '">' + head + '<div class="s-body"><div class="s-inner">' + body + '</div></div></div>';
+}
+
+/* reduz o conteúdo se não couber no slide (rede de segurança) */
+function fitBody(root) {
+  const b = root.querySelector('.s-body'), inn = root.querySelector('.s-inner');
+  if (!b || !inn) return;
+  let z = 1; inn.style.zoom = 1;
+  while (inn.getBoundingClientRect().height > b.getBoundingClientRect().height + 1 && z > 0.66) { z -= 0.03; inn.style.zoom = z; }
+}
+/* --- sincronização entre as duas janelas (mesma pasta, mesmo navegador) --- */
+function readSync() {
+  try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || { i: 0, rev: {}, t: 0 }; }
+  catch (e) { return { i: 0, rev: {}, t: 0 }; }
+}
+function writeSync(st) {
+  st.t = Date.now();
+  try { localStorage.setItem(SYNC_KEY, JSON.stringify(st)); } catch (e) {}
+  return st;
+}
+function onSync(cb) {
+  let last = 0;
+  const check = () => { const st = readSync(); if (st.t !== last) { last = st.t; cb(st); } };
+  window.addEventListener('storage', e => { if (e.key === SYNC_KEY) check(); });
+  setInterval(check, 500);
+  check();
+}
+
+document.querySelectorAll('pre.py').forEach(p=>{p.innerHTML=hl(p.textContent);});
+const CK='guia_python_n1_check';
+let st={};try{st=JSON.parse(localStorage.getItem(CK))||{};}catch(e){}
+document.querySelectorAll('#check input').forEach(i=>{i.checked=!!st[i.dataset.k];i.onchange=()=>{st[i.dataset.k]=i.checked;try{localStorage.setItem(CK,JSON.stringify(st));}catch(e){}};});
+</script>
+</body></html>
