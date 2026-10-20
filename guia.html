@@ -29,7 +29,7 @@ p{margin:0 0 14px}
 .balao::before{content:attr(data-who);position:absolute;left:-62px;top:0;font-size:40px;line-height:1}
 .balao::after{content:"";position:absolute;left:-12px;top:16px;border:10px solid transparent;border-right-color:var(--line);border-left:0}
 .ex{margin:14px 0}
-.ex pre{margin:0;font:15.5px/1.55 "Cascadia Code",Consolas,"DejaVu Sans Mono",monospace;white-space:pre-wrap;word-break:break-word}
+.ex pre{margin:0;font:15.5px/1.55 "Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;white-space:pre-wrap;word-break:break-word}
 .py{background:#1e1f24;color:#e6e6e6;border-radius:12px 12px 0 0;padding:12px 14px;position:relative}
 .py::before{content:"▶ Python";display:block;font:12px "Segoe UI",Arial,sans-serif;color:#9aa;margin-bottom:4px}
 .out{background:#2f3138;color:#f1f1f1;border-radius:0 0 12px 12px;padding:10px 14px;border-top:1px dashed #555}
@@ -37,7 +37,7 @@ p{margin:0 0 14px}
 .out.err{background:#3a2326;color:#ffd0d0}.out.err::before{content:"Erro:";color:#ffb3b3}
 .ex.solo .py{border-radius:12px}
 .t-kw{color:#569cd6}.t-fn{color:#dcdcaa}.t-str{color:#ce9178}.t-num{color:#b5cea8}.t-com{color:#6a9955}.t-id{color:#9cdcfe}.t-op{color:#d4d4d4}.t-brace{color:#da70d6;font-weight:700}.t-var{color:#9cdcfe}
-code.ic{font-family:"Cascadia Code",Consolas,"DejaVu Sans Mono",monospace;background:#e9edf3;color:#173a5e;padding:1px 6px;border-radius:6px;font-size:.88em}
+code.ic{font-family:"Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;background:#e9edf3;color:#173a5e;padding:1px 6px;border-radius:6px;font-size:.88em}
 table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:16px}
 th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
 th{background:#14213d;color:#fff}
@@ -62,7 +62,7 @@ details p{margin:6px 0 0;background:#fff;border-radius:10px;padding:8px 12px}
 .boss h3{margin-top:0;color:var(--yel)}
 .boss table td{background:#fff;color:var(--ink)}.boss table tr:nth-child(even) td{background:#f4f1ea}
 .boss code.ic{background:#ffffff22;color:#fff}
-.sym{font:700 24px "Cascadia Code",Consolas,monospace;color:var(--blue);white-space:nowrap}
+.sym{font:700 24px "Cascadia Mono",Consolas,monospace;color:var(--blue);white-space:nowrap}
 .fim{text-align:center;margin-top:40px;color:var(--mut);font-size:15px}
 td code.ic{word-break:break-word}
 @media (max-width:520px){body{font-size:17px}table{font-size:14px}th,td{padding:6px 6px}.sym{font-size:18px}.balao{margin-left:52px}.balao::before{left:-52px;font-size:34px}}
@@ -72,6 +72,9 @@ td code.ic{word-break:break-word}
   details{display:block}details>summary{display:none}details p{display:block}
   .boss{background:#fff;color:#000;border:2px solid #000}.boss h3{color:#000}
 }
+
+/* sem ligaduras: // e != aparecem sempre como dois caracteres */
+pre,code,.ln,.blk,.op code,.code,.out,.real,.mk,#cod,#rcod{font-variant-ligatures:none!important;font-feature-settings:"liga" 0,"calt" 0!important}
 </style></head><body><div class="page">
 <nav class="top"><a href="index.html">⬅ Site</a><a href="#inicio">🏠 Início</a><a href="#f1">Fase 1</a><a href="#f2">Fase 2</a><a href="#f3">Fase 3</a><a href="#erros">Erros</a><a href="#simbolos">Símbolos</a><a href="jogo.html">🎮 Jogo</a></nav>
 
@@ -355,7 +358,7 @@ function hlStr(tok) {
   ).join('');
 }
 function hl(src) {
-  const re = /(#[^\n]*)|([fF]?"(?:[^"\\\n]|\\.)*"|[fF]?'(?:[^'\\\n]|\\.)*')|([A-Za-z_À-ÿ][A-Za-z0-9_À-ÿ]*)|(\d+(?:\.\d+)?)|([\s\S])/g;
+  const re = /(#[^\n]*)|([fF]?"(?:[^"\\\n]|\\.)*"|[fF]?'(?:[^'\\\n]|\\.)*'|[fF]?"(?:[^"\\\n]|\\.)*|[fF]?'(?:[^'\\\n]|\\.)*)|([A-Za-z_À-ÿ][A-Za-z0-9_À-ÿ]*)|(\d+(?:\.\d+)?)|(\/\/|\*\*|==|!=|<=|>=)|([\s\S])/g;
   let out = '', m;
   while ((m = re.exec(src))) {
     if (m[1]) out += '<span class="t-com">' + esc(m[1]) + '</span>';
@@ -368,7 +371,8 @@ function hl(src) {
         : '<span class="t-id">' + esc(w) + '</span>';
     }
     else if (m[4]) out += '<span class="t-num">' + m[4] + '</span>';
-    else out += /[=+\-*/%]/.test(m[5]) ? '<span class="t-op">' + esc(m[5]) + '</span>' : esc(m[5]);
+    else if (m[5]) out += '<span class="t-op">' + esc(m[5]) + '</span>';
+    else out += /[=+\-*/%<>]/.test(m[6]) ? '<span class="t-op">' + esc(m[6]) + '</span>' : esc(m[6]);
   }
   return out;
 }
@@ -382,7 +386,23 @@ function outBox(txt, isErr) {
 
 function blocoNome(id) { const b = BLOCOS.find(x => x.id === id); return b ? b.nome : ''; }
 
-function renderSlide(s, idx, revealed) {
+/* ---------- digitação do código ---------- */
+function temDigitacao(s) { return s.tipo === 'conteudo' && !!s.code; }
+function passosDigitacao(s) { const p = []; s.code.split('\n').forEach((l, k) => { if (l.trim()) p.push(k); }); return p; }
+function totalPassos(s) { return passosDigitacao(s).length + (s.out ? 1 : 0); }
+function codeDigitando(s, dig, animar) {
+  const linhas = s.code.split('\n'), p = passosDigitacao(s);
+  const ate = dig > 0 ? p[Math.min(dig, p.length) - 1] : -1, vis = [];
+  for (let k = 0; k <= ate; k++) {
+    if (animar && dig <= p.length && k === ate) vis.push('<span class="tw" data-t="' + esc(linhas[k]) + '" data-h="' + esc(hl(linhas[k])) + '"></span>');
+    else vis.push(hl(linhas[k]));
+  }
+  const live = vis.join('\n') + (dig < p.length ? '<span class="caret">▌</span>' : '');
+  let html = '<div class="code"><div class="code-bar"><span class="play">▶</span><span class="lang">Python</span></div><pre class="stack"><span class="ghost">' + hl(s.code) + '</span><span class="live">' + live + '</span></pre></div>';
+  if (s.out) html += outBox(s.out).replace('class="out"', 'class="out ' + (dig > p.length ? 'out-in' : 'out-ghost') + '"');
+  return html;
+}
+function renderSlide(s, idx, revealed, dig, animar) {
   const n = idx + 1, total = SLIDES.length;
   const head = s.tipo === 'hero' ? '' :
     '<div class="s-head"><span class="s-bloco">' + esc(blocoNome(s.b)) + '</span><span class="s-num">' + n + ' / ' + total + '</span></div>';
@@ -392,7 +412,8 @@ function renderSlide(s, idx, revealed) {
   } else if (s.tipo === 'conteudo') {
     const itens = '<ul class="itens">' + s.itens.map(i => '<li>' + md(i) + '</li>').join('') + '</ul>';
     if (s.code) {
-      body = '<h2>' + md(s.titulo) + '</h2><div class="cols' + (s.code.split('\n').length > 3 ? ' wide-code' : '') + '"><div>' + itens + '</div><div>' + codeBox(s.code) + (s.out ? outBox(s.out) : '') + '</div></div>';
+      const cod = dig === undefined || dig === null ? codeBox(s.code) + (s.out ? outBox(s.out) : '') : codeDigitando(s, dig, animar);
+      body = '<h2>' + md(s.titulo) + '</h2><div class="cols' + (s.code.split('\n').length > 3 ? ' wide-code' : '') + '"><div>' + itens + '</div><div>' + cod + '</div></div>';
     } else body = '<h2>' + md(s.titulo) + '</h2>' + itens.replace('class="itens"', 'class="itens big"');
   } else if (s.tipo === 'caso') {
     body = '<h2><span class="tag tag-caso">Situação-problema</span> ' + md(s.titulo) + '</h2>' +
@@ -432,6 +453,18 @@ function fitBody(root) {
   let z = 1; inn.style.zoom = 1;
   while (inn.getBoundingClientRect().height > b.getBoundingClientRect().height + 1 && z > 0.66) { z -= 0.03; inn.style.zoom = z; }
 }
+/* --- estado compartilhado: slide atual, respostas reveladas, linhas digitadas --- */
+function salvar(p) { st = writeSync(Object.assign({ i: st.i || 0, rev: st.rev || {}, dig: st.dig || {} }, p)); return st; }
+function digDe(x, i) { return (x.dig || {})[i] || 0; }
+function avancar() {
+  const i = st.i || 0, s = SLIDES[i], d = digDe(st, i);
+  if (temDigitacao(s) && d < totalPassos(s)) { const D = Object.assign({}, st.dig || {}); D[i] = d + 1; return salvar({ dig: D }); }
+  return i < SLIDES.length - 1 ? salvar({ i: i + 1 }) : st;
+}
+function voltar() { const i = st.i || 0; return i > 0 ? salvar({ i: i - 1 }) : st; }
+function irPara(i) { return salvar({ i: Math.max(0, Math.min(SLIDES.length - 1, i)) }); }
+function alternarRev() { const rev = Object.assign({}, st.rev || {}); rev[st.i || 0] = !rev[st.i || 0]; return salvar({ rev }); }
+function definirDig(v) { const D = Object.assign({}, st.dig || {}); D[st.i || 0] = v; return salvar({ dig: D }); }
 /* --- sincronização entre as duas janelas (mesma pasta, mesmo navegador) --- */
 function readSync() {
   try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || { i: 0, rev: {}, t: 0 }; }
@@ -443,7 +476,7 @@ function writeSync(st) {
   return st;
 }
 function onSync(cb) {
-  let last = 0;
+  let last = -1;
   const check = () => { const st = readSync(); if (st.t !== last) { last = st.t; cb(st); } };
   window.addEventListener('storage', e => { if (e.key === SYNC_KEY) check(); });
   setInterval(check, 500);
