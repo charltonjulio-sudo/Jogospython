@@ -289,6 +289,7 @@ function avancar() {
 }
 function voltar() { const i = st.i || 0; return i > 0 ? salvar({ i: i - 1 }) : st; }
 function irPara(i) { return salvar({ i: Math.max(0, Math.min(SLIDES.length - 1, i)) }); }
+function zerarAula() { st = writeSync({ i: 0, rev: {}, dig: {} }); return st; }
 function alternarRev() { const rev = Object.assign({}, st.rev || {}); rev[st.i || 0] = !rev[st.i || 0]; return salvar({ rev }); }
 function definirDig(v) { const D = Object.assign({}, st.dig || {}); D[st.i || 0] = v; return salvar({ dig: D }); }
 /* --- sincronização entre as duas janelas (mesma pasta, mesmo navegador) --- */
@@ -310,7 +311,37 @@ function onSync(cb) {
 }
 
 /* ---------- placar: nota, código de conferência (usado no jogo e no conferidor) ---------- */
-const TURMAS = ['1º Ano ADM - Turma A', '1º Ano ADM - Turma B', '1º Ano ADM - Turma C', '1º Ano ADM - Turma D'];
+/* colégio vai junto na turma ("IEEL · 1º Ano ADM - Turma A"): o formulário não muda e o código de conferência já inclui o colégio */
+const COLEGIOS = [
+  { curto: 'IEEL', nome: 'Instituto de Educação Estadual de Londrina', turmas: ['1º Ano ADM - Turma A', '1º Ano ADM - Turma B', '1º Ano ADM - Turma C', '1º Ano ADM - Turma D', '1º Ano Formação de Docentes'] },
+  { curto: 'Adélia', nome: 'Colégio Estadual Cívico-Militar Professora Adelia Dionisia Barbosa', turmas: ['1º Ano ADM - Turma A', '1º Ano ADM - Turma B', '1º Ano ADM - Turma C', '1º Ano ADM - Turma D'] },
+];
+const SEP_COL = ' · ';
+const TURMAS = COLEGIOS.flatMap(c => c.turmas.map(t => c.curto + SEP_COL + t));
+const escT = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+function separarTurma(v) {
+  v = String(v || ''); const c = COLEGIOS.find(x => v.startsWith(x.curto + SEP_COL));
+  return c ? { col: c.curto, turma: v.slice((c.curto + SEP_COL).length) } : { col: '', turma: v };
+}
+function opcoesTurma(c, sel) {
+  if (!c) return '<option value="">Escolha o colégio primeiro</option>';
+  return '<option value="">Escolha…</option>' + c.turmas.map(t => '<option' + (t === sel ? ' selected' : '') + '>' + escT(t) + '</option>').join('') + '<option value="outra"' + (sel === 'outra' ? ' selected' : '') + '>Outra turma</option>';
+}
+/* seletores de colégio e turma; p = prefixo dos ids; atual = turma já salva */
+function turmaHtml(p, atual) {
+  const s = separarTurma(atual), c = COLEGIOS.find(x => x.curto === s.col), padrao = !!c && c.turmas.includes(s.turma), outra = !!c && !!s.turma && !padrao;
+  return '<label class="f" for="' + p + 'col">Colégio</label><select class="t" id="' + p + 'col"><option value="">Escolha…</option>' +
+    COLEGIOS.map(x => '<option value="' + escT(x.curto) + '"' + (x === c ? ' selected' : '') + '>' + escT(x.curto + ' – ' + x.nome) + '</option>').join('') + '</select>' +
+    '<label class="f" for="' + p + 'tur">Turma</label><select class="t" id="' + p + 'tur"' + (c ? '' : ' disabled') + '>' + opcoesTurma(c, padrao ? s.turma : outra ? 'outra' : '') + '</select>' +
+    '<input class="t" id="' + p + 'out" placeholder="Digite sua turma" maxlength="40" value="' + (outra ? escT(s.turma) : '') + '" style="display:' + (outra ? 'block' : 'none') + ';margin-top:8px">';
+}
+/* liga os seletores e devolve uma função que lê a turma completa ('' se faltar algo) */
+function ligarTurma(p) {
+  const g = id => document.getElementById(p + id), col = g('col'), tur = g('tur'), out = g('out');
+  col.onchange = () => { const c = COLEGIOS.find(x => x.curto === col.value); tur.innerHTML = opcoesTurma(c, ''); tur.disabled = !c; out.style.display = 'none'; };
+  tur.onchange = () => { out.style.display = tur.value === 'outra' ? 'block' : 'none'; };
+  return () => { const v = tur.value === 'outra' ? out.value.trim() : tur.value; return col.value && v ? col.value + SEP_COL + v : ''; };
+}
 const NOTA_POR_ESTRELAS = [0, 1.5, 2.0, 2.5];   /* andar concluído com 1, 2 ou 3 estrelas; 4 andares = 10 */
 const SALT = 'dungeon-py-rocco-2026';
 const EPOCA = Date.UTC(2026, 0, 1);
@@ -448,9 +479,8 @@ function telaInicio() {
   const form = id ? `<div class="idcard"><span class="e">${h.e}</span><div style="flex:1"><b>${esc(id.nome)}</b><small>Nº ${esc(id.numero)} · ${esc(id.turma)}</small></div></div>
       <button class="icon-btn" id="naoSou" style="margin-top:10px">🙋 Não sou eu (novo aluno)</button>`
     : `<label class="f" for="nome">Nome completo</label><input class="t" id="nome" autocomplete="name" maxlength="60" placeholder="Seu nome e sobrenome">
-       <div class="row2"><div><label class="f" for="num">Número</label><input class="t" id="num" inputmode="numeric" maxlength="3" placeholder="Nº"></div>
-       <div><label class="f" for="turma">Turma</label><select class="t" id="turma"><option value="">Escolha…</option>${TURMAS.map(t => `<option>${t}</option>`).join('')}<option value="outra">Outra turma</option></select></div></div>
-       <input class="t" id="turmaOutra" placeholder="Digite sua turma" style="display:none;margin-top:8px" maxlength="40">
+       <label class="f" for="num">Número da chamada</label><input class="t" id="num" inputmode="numeric" maxlength="3" placeholder="Nº" style="max-width:140px">
+       ${turmaHtml('i', '')}
        <b style="display:block;margin-top:14px">Escolha seu personagem</b>
        <div class="heroes">${HEROIS.map((x, i) => `<button class="hero ${i === (meta.hero || 0) ? 'on' : ''}" data-h="${i}"><span class="e">${x.e}</span><b>${x.n}</b><small>${x.d}</small></button>`).join('')}</div>`;
   const cont = save.run ? ANDARES.find(a => a.id === save.run.aid) : null;
@@ -475,12 +505,11 @@ function telaInicio() {
     $('#go').onclick = () => { beep(520, .08); cont ? telaPergunta() : telaMapa(); };
     return;
   }
-  const sel = $('#turma'), outra = $('#turmaOutra');
-  sel.onchange = () => { outra.style.display = sel.value === 'outra' ? 'block' : 'none'; };
+  const lerTurma = ligarTurma('i');
   app.querySelectorAll('.hero').forEach(b => b.onclick = () => { meta.hero = +b.dataset.h; app.querySelectorAll('.hero').forEach(x => x.classList.toggle('on', x === b)); });
   $('#go').onclick = () => {
-    const nome = $('#nome').value.trim().replace(/\s+/g, ' '), num = $('#num').value.trim(), turma = sel.value === 'outra' ? outra.value.trim() : sel.value;
-    const falta = nome.split(' ').length < 2 || nome.length < 5 ? '👆 Escreva seu nome e sobrenome.' : !/^\d{1,3}$/.test(num) ? '👆 Escreva seu número da chamada (só números).' : !turma ? '👆 Escolha sua turma.' : '';
+    const nome = $('#nome').value.trim().replace(/\s+/g, ' '), num = $('#num').value.trim(), turma = lerTurma();
+    const falta = nome.split(' ').length < 2 || nome.length < 5 ? '👆 Escreva seu nome e sobrenome.' : !/^\d{1,3}$/.test(num) ? '👆 Escreva seu número da chamada (só números).' : !turma ? '👆 Escolha seu colégio e sua turma.' : '';
     if (falta) { $('#hint').textContent = falta; beep(200, .15); return; }
     meta.id = { nome, numero: num, turma }; store(); beep(520, .08); telaMapa();
   };
@@ -779,7 +808,7 @@ function tentarRestaurar(id, codigoDigitado, extra, hint) {
 }
 function telaRestaurar() {
   topo();
-  const id = meta.id || { nome: '', numero: '', turma: '' }, padrao = TURMAS.includes(id.turma);
+  const id = meta.id || { nome: '', numero: '', turma: '' };
   app.innerHTML = `<h1 style="font-size:30px">Continuar de onde parei</h1>
     <p class="sub">Use o placar que você baixou em outro computador. As estrelas voltam e os andares ficam liberados.</p>
     <div class="panel"><h2>Opção 1 · Enviar a imagem do placar</h2>
@@ -789,14 +818,13 @@ function telaRestaurar() {
     <div class="panel"><h2>Opção 2 · Digitar o código</h2>
       <p class="sub">Copie do placar, exatamente como está escrito.</p>
       <label class="f" for="rnome">Nome completo</label><input class="t" id="rnome" maxlength="60" value="${esc(id.nome)}">
-      <div class="row2"><div><label class="f" for="rnum">Número</label><input class="t" id="rnum" inputmode="numeric" maxlength="3" value="${esc(id.numero)}"></div>
-      <div><label class="f" for="rturma">Turma</label><select class="t" id="rturma"><option value="">Escolha…</option>${TURMAS.map(t => `<option ${t === id.turma ? 'selected' : ''}>${t}</option>`).join('')}<option value="outra" ${id.turma && !padrao ? 'selected' : ''}>Outra turma</option></select></div></div>
-      <input class="t" id="rturmaOutra" placeholder="Digite sua turma" maxlength="40" value="${padrao ? '' : esc(id.turma)}" style="display:${id.turma && !padrao ? 'block' : 'none'};margin-top:8px">
+      <label class="f" for="rnum">Número da chamada</label><input class="t" id="rnum" inputmode="numeric" maxlength="3" value="${esc(id.numero)}" style="max-width:140px">
+      ${turmaHtml('r', id.turma)}
       <label class="f" for="rcod">Código de conferência</label><input class="t" id="rcod" placeholder="Ex.: FRBLB1X8GG-4CUXJ" autocomplete="off" spellcheck="false" style="font-family:'Cascadia Code',Consolas,monospace;text-transform:uppercase;font-size:19px">
       <button class="btn full" id="rok" style="margin-top:14px">✅ Continuar com este código</button>
       <div class="hint" id="h2"></div></div>
     <button class="btn sec full" id="volta">⬅ Voltar</button>`;
-  const sel = $('#rturma'); sel.onchange = () => { $('#rturmaOutra').style.display = sel.value === 'outra' ? 'block' : 'none'; };
+  const lerTurmaR = ligarTurma('r');
   $('#volta').onclick = () => meta.id && save.lib > 1 || save.run ? telaMapa() : telaInicio();
   $('#arqLbl').onclick = () => { seletorAberto = true; };
   $('#arq').onchange = e => {
@@ -813,8 +841,8 @@ function telaRestaurar() {
     rd.readAsArrayBuffer(f);
   };
   $('#rok').onclick = () => {
-    const nome = $('#rnome').value.trim().replace(/\s+/g, ' '), numero = $('#rnum').value.trim(), turma = sel.value === 'outra' ? $('#rturmaOutra').value.trim() : sel.value, h = $('#h2');
-    if (!nome || !numero || !turma) { h.textContent = '👆 Preencha nome, número e turma iguais aos do placar.'; beep(200, .15); return; }
+    const nome = $('#rnome').value.trim().replace(/\s+/g, ' '), numero = $('#rnum').value.trim(), turma = lerTurmaR(), h = $('#h2');
+    if (!nome || !numero || !turma) { h.textContent = '👆 Preencha nome, número, colégio e turma iguais aos do placar.'; beep(200, .15); return; }
     if (!$('#rcod').value.trim()) { h.textContent = '👆 Digite o código de conferência.'; beep(200, .15); return; }
     tentarRestaurar({ nome, numero, turma }, $('#rcod').value, null, h);
   };
