@@ -75,7 +75,7 @@ input.t:focus,select.t:focus{outline:none;border-color:var(--gold)}
 .op code{font:15px "Cascadia Code",Consolas,"DejaVu Sans Mono",monospace;word-break:break-word;white-space:pre-wrap}
 .op.ok{border-color:var(--grn);background:#1d3b2c}.op.no{border-color:var(--red);background:#3e1f26}
 .lines{background:#1e1f24;border-radius:12px;overflow:hidden;margin-bottom:6px;border:1px solid #33343c}
-.ln{display:flex;width:100%;text-align:left;padding:9px 10px;border-bottom:1px solid #2a2b31;font:15px/1.5 "Cascadia Code",Consolas,"DejaVu Sans Mono",monospace}
+.ln{display:flex;width:100%;background:transparent;color:#e6e6e6;text-align:left;padding:9px 10px;border-bottom:1px solid #2a2b31;font:15px/1.5 "Cascadia Code",Consolas,"DejaVu Sans Mono",monospace}
 .ln:last-child{border-bottom:0}
 .ln .n{flex:none;width:28px;color:#6e7181}
 .ln code{white-space:pre-wrap;word-break:break-word;font:inherit}
@@ -172,7 +172,7 @@ function hlStr(tok) {
   ).join('');
 }
 function hl(src) {
-  const re = /(#[^\n]*)|([fF]?"(?:[^"\\\n]|\\.)*"|[fF]?'(?:[^'\\\n]|\\.)*')|([A-Za-z_À-ÿ][A-Za-z0-9_À-ÿ]*)|(\d+(?:\.\d+)?)|([\s\S])/g;
+  const re = /(#[^\n]*)|([fF]?"(?:[^"\\\n]|\\.)*"|[fF]?'(?:[^'\\\n]|\\.)*'|[fF]?"(?:[^"\\\n]|\\.)*|[fF]?'(?:[^'\\\n]|\\.)*)|([A-Za-z_À-ÿ][A-Za-z0-9_À-ÿ]*)|(\d+(?:\.\d+)?)|([\s\S])/g;
   let out = '', m;
   while ((m = re.exec(src))) {
     if (m[1]) out += '<span class="t-com">' + esc(m[1]) + '</span>';
@@ -199,7 +199,23 @@ function outBox(txt, isErr) {
 
 function blocoNome(id) { const b = BLOCOS.find(x => x.id === id); return b ? b.nome : ''; }
 
-function renderSlide(s, idx, revealed) {
+/* ---------- digitação do código ---------- */
+function temDigitacao(s) { return s.tipo === 'conteudo' && !!s.code; }
+function passosDigitacao(s) { const p = []; s.code.split('\n').forEach((l, k) => { if (l.trim()) p.push(k); }); return p; }
+function totalPassos(s) { return passosDigitacao(s).length + (s.out ? 1 : 0); }
+function codeDigitando(s, dig, animar) {
+  const linhas = s.code.split('\n'), p = passosDigitacao(s);
+  const ate = dig > 0 ? p[Math.min(dig, p.length) - 1] : -1, vis = [];
+  for (let k = 0; k <= ate; k++) {
+    if (animar && dig <= p.length && k === ate) vis.push('<span class="tw" data-t="' + esc(linhas[k]) + '" data-h="' + esc(hl(linhas[k])) + '"></span>');
+    else vis.push(hl(linhas[k]));
+  }
+  const live = vis.join('\n') + (dig < p.length ? '<span class="caret">▌</span>' : '');
+  let html = '<div class="code"><div class="code-bar"><span class="play">▶</span><span class="lang">Python</span></div><pre class="stack"><span class="ghost">' + hl(s.code) + '</span><span class="live">' + live + '</span></pre></div>';
+  if (s.out) html += outBox(s.out).replace('class="out"', 'class="out ' + (dig > p.length ? 'out-in' : 'out-ghost') + '"');
+  return html;
+}
+function renderSlide(s, idx, revealed, dig, animar) {
   const n = idx + 1, total = SLIDES.length;
   const head = s.tipo === 'hero' ? '' :
     '<div class="s-head"><span class="s-bloco">' + esc(blocoNome(s.b)) + '</span><span class="s-num">' + n + ' / ' + total + '</span></div>';
@@ -209,7 +225,8 @@ function renderSlide(s, idx, revealed) {
   } else if (s.tipo === 'conteudo') {
     const itens = '<ul class="itens">' + s.itens.map(i => '<li>' + md(i) + '</li>').join('') + '</ul>';
     if (s.code) {
-      body = '<h2>' + md(s.titulo) + '</h2><div class="cols' + (s.code.split('\n').length > 3 ? ' wide-code' : '') + '"><div>' + itens + '</div><div>' + codeBox(s.code) + (s.out ? outBox(s.out) : '') + '</div></div>';
+      const cod = dig === undefined || dig === null ? codeBox(s.code) + (s.out ? outBox(s.out) : '') : codeDigitando(s, dig, animar);
+      body = '<h2>' + md(s.titulo) + '</h2><div class="cols' + (s.code.split('\n').length > 3 ? ' wide-code' : '') + '"><div>' + itens + '</div><div>' + cod + '</div></div>';
     } else body = '<h2>' + md(s.titulo) + '</h2>' + itens.replace('class="itens"', 'class="itens big"');
   } else if (s.tipo === 'caso') {
     body = '<h2><span class="tag tag-caso">Situação-problema</span> ' + md(s.titulo) + '</h2>' +
@@ -249,6 +266,18 @@ function fitBody(root) {
   let z = 1; inn.style.zoom = 1;
   while (inn.getBoundingClientRect().height > b.getBoundingClientRect().height + 1 && z > 0.66) { z -= 0.03; inn.style.zoom = z; }
 }
+/* --- estado compartilhado: slide atual, respostas reveladas, linhas digitadas --- */
+function salvar(p) { st = writeSync(Object.assign({ i: st.i || 0, rev: st.rev || {}, dig: st.dig || {} }, p)); return st; }
+function digDe(x, i) { return (x.dig || {})[i] || 0; }
+function avancar() {
+  const i = st.i || 0, s = SLIDES[i], d = digDe(st, i);
+  if (temDigitacao(s) && d < totalPassos(s)) { const D = Object.assign({}, st.dig || {}); D[i] = d + 1; return salvar({ dig: D }); }
+  return i < SLIDES.length - 1 ? salvar({ i: i + 1 }) : st;
+}
+function voltar() { const i = st.i || 0; return i > 0 ? salvar({ i: i - 1 }) : st; }
+function irPara(i) { return salvar({ i: Math.max(0, Math.min(SLIDES.length - 1, i)) }); }
+function alternarRev() { const rev = Object.assign({}, st.rev || {}); rev[st.i || 0] = !rev[st.i || 0]; return salvar({ rev }); }
+function definirDig(v) { const D = Object.assign({}, st.dig || {}); D[st.i || 0] = v; return salvar({ dig: D }); }
 /* --- sincronização entre as duas janelas (mesma pasta, mesmo navegador) --- */
 function readSync() {
   try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || { i: 0, rev: {}, t: 0 }; }
@@ -260,7 +289,7 @@ function writeSync(st) {
   return st;
 }
 function onSync(cb) {
-  let last = 0;
+  let last = -1;
   const check = () => { const st = readSync(); if (st.t !== last) { last = st.t; cb(st); } };
   window.addEventListener('storage', e => { if (e.key === SYNC_KEY) check(); });
   setInterval(check, 500);
@@ -768,25 +797,27 @@ function telaRestaurar() {
 let saiuEm = 0, pegadinhaAtiva = false, ultimaPegadinha = 0, ignorarSaidaAte = 0, seletorAberto = false, passeLivre = false;
 const AVISOS = 4;
 const TITULOS = ['👀 Saiu da tela, é?', '🤨 De novo?!', '🕵️ Te peguei mais uma vez!', '☠️ Quarta vez…'];
-function marcarSaida() { if (!saiuEm) saiuEm = Date.now(); }
+const emBatalha = () => document.body.classList.contains('batalha') && !!save.run;
+function marcarSaida() { if (!saiuEm && emBatalha()) saiuEm = Date.now(); }
 function voltou() {
   if (!saiuEm || document.hidden || !document.hasFocus()) return;   /* mouse passando sobre a janela sem foco não conta como volta */
   const fora = Date.now() - saiuEm; saiuEm = 0;
   if (seletorAberto || passeLivre) { seletorAberto = passeLivre = false; return; }
-  if (fora < 1200 || pegadinhaAtiva || Date.now() < ignorarSaidaAte || Date.now() - ultimaPegadinha < 6000 || !meta.id) return;
+  if (fora < 2000 || !emBatalha() || pegadinhaAtiva || Date.now() < ignorarSaidaAte || Date.now() - ultimaPegadinha < 6000 || !meta.id) return;
   contarSaida();
 }
+/* total vai para o placar; os avisos e o game over contam só na tentativa atual do andar */
 function contarSaida() {
-  save.saidas = Math.min(63, (save.saidas || 0) + 1); store();
-  save.saidas > AVISOS ? gameOver() : pegadinha(save.saidas);
+  if (!save.run) return;
+  save.saidas = Math.min(63, (save.saidas || 0) + 1);
+  save.run.saidas = (save.run.saidas || 0) + 1; store();
+  save.run.saidas > AVISOS ? gameOver() : pegadinha(save.run.saidas);
 }
 /* saiu da página no meio de uma pergunta (botão voltar, outro endereço) e voltou em menos de 30 min: conta como saída */
 window.addEventListener('pagehide', () => { if (save.run && meta.id && !pegadinhaAtiva) { save.foraDesde = Date.now(); store(); } });
 document.addEventListener('visibilitychange', () => document.hidden ? marcarSaida() : voltou());
 window.addEventListener('blur', marcarSaida);
 window.addEventListener('focus', voltou);
-document.documentElement.addEventListener('mouseleave', marcarSaida);
-document.documentElement.addEventListener('mouseenter', voltou);
 function pegadinha(n) {
   pegadinhaAtiva = true;
   const ov = document.createElement('div'); ov.className = 'prank';
@@ -803,8 +834,8 @@ function pegadinha(n) {
     ov.classList.add('calm');
     const ultimo = n >= AVISOS;
     const aviso = ultimo
-      ? '<div class="pk-warn">⚠️ Último aviso! Na próxima vez que sair da tela é <b>GAME OVER</b> de verdade: você perde o andar em que estiver.</div>'
-      : `<div class="pk-note">Aviso <b>${n}</b> de ${AVISOS} · fica registrado no seu placar</div>`;
+      ? '<div class="pk-warn">⚠️ Último aviso! Se sair da tela mais uma vez <b>neste andar</b>, é <b>GAME OVER</b>: você perde a tentativa e recomeça o andar.</div>'
+      : `<div class="pk-note">Aviso <b>${n}</b> de ${AVISOS} neste andar · fica registrado no seu placar</div>`;
     ov.innerHTML = `<div class="pk"><div class="pk-laugh">😂</div><div class="pk-t">Vou não!</div><div class="pk-s">Mas não faça mais isso.</div>${aviso}<button class="btn" id="pkOk">${ultimo ? 'Entendi 😬' : 'Tá bom 😅'}</button></div>`;
     [880, 740, 880, 740, 990].forEach((f, i) => setTimeout(() => beep(f, .09, 'triangle'), i * 110));
     $('#pkOk').onclick = () => { ov.remove(); pegadinhaAtiva = false; ultimaPegadinha = Date.now(); };
@@ -816,7 +847,7 @@ function gameOver() {
   if (save.run) { const a = andarAtual(); perdido = a ? a.nome : ''; save.run = null; store(); }
   const ov = document.createElement('div'); ov.className = 'go';
   ov.innerHTML = `<div class="go-band"><div class="go-t">VOCÊ MORREU</div></div>
-    <div class="go-info"><p>Você saiu da tela <b>${save.saidas}</b> vezes.</p>
+    <div class="go-info"><p>Você saiu da tela <b>${(save.run && save.run.saidas) || AVISOS + 1}</b> vezes neste andar.</p>
     <p>${perdido ? 'O andar <b>' + esc(perdido) + '</b> foi perdido. As estrelas que você já tinha continuam.' : 'Nenhum andar estava em andamento, mas a saída ficou registrada.'}</p>
     <button class="btn" id="goOk">🔥 Levantar de novo</button></div>`;
   document.body.appendChild(ov);
