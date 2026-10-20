@@ -131,6 +131,7 @@ input.t:focus,select.t:focus{outline:none;border-color:var(--gold)}
 @keyframes laugh{from{transform:rotate(-12deg) scale(1)}to{transform:rotate(12deg) scale(1.12)}}
 .pk-note{font-size:14px;color:var(--mut);margin:10px 0 16px}
 body.batalha #home{display:none}
+.printBadge{position:fixed;right:12px;bottom:12px;z-index:45;background:#0e0c18e6;color:var(--gold);border:1px solid #ffd43b66;border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px;pointer-events:none}
 .pk-warn{background:#3a0d14;border:2px solid var(--red);border-radius:14px;padding:12px 14px;margin:12px 0 16px;color:#ffd6dc;font-weight:700;font-size:17px}
 /* game over */
 .go{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(0,0,0,.84);animation:goBg 1.6s ease both}
@@ -646,7 +647,7 @@ function desenharPlacar() {
     txt(fmtNota(NOTA_POR_ESTRELAS[s]), 980, y, 32, '#ffffff', 800, 'right');
   });
   if (ANDARES.some(a => (save.andares[a.id] || {}).rest)) txt('↺ = andar concluído antes, em outro computador', 100, 1182, 20, '#b9b0d4', 600);
-  const linha = 'Saídas da tela: ' + save.saidas + '  ·  Partida nº ' + (meta.partidas || 1) + '  ·  ' + (save.fim ? 'Jogo completo' : 'Placar parcial') + (save.restaurado ? '  ·  Continuado de outro PC' : '');
+  const linha = 'Saídas da tela: ' + save.saidas + '  ·  Partida nº ' + (meta.partidas || 1) + '  ·  ' + (save.fim ? 'Jogo completo' : 'Placar parcial') + (save.restaurado ? '  ·  Continuado de outro PC' : '') + (save.prints ? '  ·  Prints liberados: ' + save.prints : '');
   txt(linha, W / 2, 1255, fit(linha, W - 140, 28, 600), '#e7e0fb', 600, 'center');
   card(60, 1290, W - 120, 150);
   txt('CÓDIGO DE CONFERÊNCIA', 100, 1340, 22, '#b9b0d4', 800);
@@ -818,11 +819,35 @@ const emBatalha = () => !!save.run && !!meta.id;
 function marcarSaida() { if (!saiuEm && emBatalha()) saiuEm = Date.now(); }
 function voltou() {
   if (!saiuEm || document.hidden || !document.hasFocus()) return;   /* mouse passando sobre a janela sem foco não conta como volta */
-  const fora = Date.now() - saiuEm; saiuEm = 0;
+  const ini = saiuEm, fora = Date.now() - saiuEm; saiuEm = 0;
+  if (printAte && ini <= printAte) { encerrarPrint(); if (fora <= PRINT_MS) return; }   /* saída curta dentro da liberação de print não conta */
   if (seletorAberto || passeLivre) { seletorAberto = passeLivre = false; return; }
   if (fora < 2000 || !emBatalha() || pegadinhaAtiva || Date.now() < ignorarSaidaAte || Date.now() - ultimaPegadinha < 6000 || !meta.id) return;
   contarSaida();
 }
+/* liberação de print: digitar a palavra secreta durante o jogo libera UMA saída curta por 1 minuto */
+const PALAVRA_PRINT = 'charlton', PRINT_MS = 60000, PRINTS_POR_ANDAR = 3;
+let teclas = '', ultimaTecla = 0, printAte = 0, printTimer = null;
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.altKey || e.metaKey || e.key.length !== 1 || !meta.id) return;
+  const ag = Date.now(); if (ag - ultimaTecla > 2500) teclas = ''; ultimaTecla = ag;
+  teclas = (teclas + e.key.toLowerCase()).slice(-PALAVRA_PRINT.length);
+  if (teclas === PALAVRA_PRINT) { teclas = ''; ativarPrint(); }
+});
+function ativarPrint() {
+  if (save.run) {
+    if ((save.run.prints || 0) >= PRINTS_POR_ANDAR) { pop('Limite de prints neste andar'); return; }
+    save.run.prints = (save.run.prints || 0) + 1;
+  }
+  save.prints = (save.prints || 0) + 1; store();
+  printAte = Date.now() + PRINT_MS;
+  let b = document.getElementById('printBadge');
+  if (!b) { b = document.createElement('div'); b.id = 'printBadge'; b.className = 'printBadge'; document.body.appendChild(b); }
+  const tick = () => { const r = Math.max(0, printAte - Date.now()); const sg = Math.ceil(r / 1000); b.textContent = '📸 Pode tirar o print · ' + Math.floor(sg / 60) + ':' + String(sg % 60).padStart(2, '0'); if (!r && !saiuEm) encerrarPrint(); };   /* se saiu dentro do minuto, a liberação vale até ele voltar */
+  clearInterval(printTimer); tick(); printTimer = setInterval(tick, 250);
+  beep(880, .08, 'triangle');
+}
+function encerrarPrint() { printAte = 0; clearInterval(printTimer); const b = document.getElementById('printBadge'); if (b) b.remove(); }
 /* total vai para o placar; os avisos e o game over contam só na tentativa atual do andar */
 function contarSaida() {
   if (!save.run) return;
