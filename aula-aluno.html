@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14213d">
+<title>Python · Aulas 1 a 3 · Aula no celular</title>
+<style>
+:root{--bg:#f6f4ee;--pn:#fff;--ink:#1d2433;--mut:#5b6475;--ln:#e3e0d8;--az:#14213d;--am:#ffd43b;--vd:#1e8a4c;--vm:#c0392b;--lil:#6c3fc4}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:calc(17px * var(--z,1))/1.5 "Segoe UI",Roboto,"Noto Sans",Ubuntu,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--az);color:#fff;padding:8px 12px}
+.hrow{display:flex;align-items:center;gap:8px}
+.hrow .t{flex:1;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{font:inherit;font-size:15px;font-weight:700;border:0;border-radius:10px;padding:6px 10px;background:#ffffff26;color:#fff;cursor:pointer}
+.ib.py{background:var(--am);color:var(--az)}
+.bar{height:4px;background:#ffffff33;border-radius:4px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--am)}
+main{max-width:720px;margin:0 auto;padding:14px 14px 110px}
+h1{font-size:calc(26px * var(--z,1));line-height:1.2;margin:6px 0 12px}
+h2{font-size:calc(22px * var(--z,1));line-height:1.25;margin:4px 0 12px}
+.meta{display:flex;justify-content:space-between;gap:8px;color:var(--mut);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:14px;margin:0 0 12px}
+.bl{display:flex;flex-direction:column;gap:8px}
+.bl .nm{font-weight:800}
+.bl .st{font-size:14px;color:var(--mut)}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0;font:inherit;font-size:18px;text-transform:uppercase;border:2px solid var(--ln);border-radius:10px;padding:8px 10px}
+.btn{font:inherit;font-weight:800;border:0;border-radius:12px;padding:10px 14px;background:var(--az);color:#fff;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn.am{background:var(--am);color:var(--az)}.btn.cl{background:#e9e6dd;color:var(--ink)}
+.msg{font-size:14px;font-weight:700;min-height:20px}.msg.no{color:var(--vm)}.msg.ok{color:var(--vd)}
+.hero{text-align:center;padding:26px 6px}.hero .ic{font-size:56px}.hero .k{color:var(--mut);font-weight:700;text-transform:uppercase;font-size:13px;letter-spacing:.06em}
+.hero .sub{color:var(--mut);font-size:18px}
+ul.it{padding-left:22px;margin:0 0 12px}ul.it li{margin:6px 0}
+.tag{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border-radius:8px;padding:2px 8px;margin-bottom:6px}
+.tg-caso{background:#e7defa;color:var(--lil)}.tg-at{background:#dff3e7;color:var(--vd)}.tg-q{background:#fff1b8;color:#7a5b00}
+.perg{background:#fff6cc;border-left:6px solid var(--am);border-radius:10px;padding:10px 12px;font-weight:700}
+.nota{background:#eef2fb;border-left:6px solid var(--az);border-radius:10px;padding:10px 12px;margin-top:8px}
+.card{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:12px;margin:0 0 10px}
+.card .cab{font-weight:800;margin-bottom:6px}.card .big{font:800 26px "Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;margin:4px 0}
+.card.err{border-color:#f0b4ad}
+.code{background:#0f1420;border-radius:12px;overflow:hidden;margin:8px 0}
+.code .cb{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#1a2133;color:#9fb0d0;font-size:12px;font-weight:700}
+.code pre,pre.o{margin:0;padding:10px 12px;font:calc(15px * var(--z,1))/1.5 "Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;white-space:pre-wrap;word-break:break-word;font-variant-ligatures:none;color:#e6e6e6}
+pre.o{background:#f1efe8;color:var(--ink);border-radius:10px;border:1px solid var(--ln)}
+pre.o.err{background:#fde9e7;border-color:#f0b4ad;color:#7d1d12}
+.run{font:inherit;font-size:13px;font-weight:800;border:0;border-radius:8px;padding:4px 10px;background:var(--am);color:var(--az);cursor:pointer}
+details{margin:8px 0}details summary{cursor:pointer;font-weight:800;color:var(--lil)}
+.ops{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;gap:10px;align-items:flex-start;text-align:left;font:inherit;background:var(--pn);border:2px solid var(--ln);border-radius:12px;padding:12px;cursor:pointer;color:var(--ink)}
+.op b{flex:none;width:26px;height:26px;border-radius:50%;background:#e9e6dd;display:grid;place-items:center;font-size:14px}
+.op.ok{border-color:var(--vd);background:#e6f5ec}.op.no{border-color:var(--vm);background:#fde9e7}
+.op:disabled{cursor:default;opacity:1}
+.exp{background:#eef2fb;border-radius:10px;padding:10px 12px;margin-top:10px}
+code.ic{font-family:"Cascadia Mono",Consolas,monospace;background:#0000000f;padding:1px 6px;border-radius:6px;font-variant-ligatures:none}
+.t-kw{color:#ff9e64}.t-fn{color:#7dcfff}.t-str{color:#9ece6a}.t-num{color:#e0af68}.t-com{color:#7a869e;font-style:italic}.t-op{color:#bb9af7}.t-var{color:#f7768e}.t-brace{color:#ff9e64}.t-id{color:#e6e6e6}
+nav.bot{position:fixed;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fffffff2;border-top:1px solid var(--ln)}
+nav.bot button{font:inherit;font-weight:800;font-size:17px;border:0;border-radius:14px;padding:14px 10px;cursor:pointer}
+#prev,#home{background:#e9e6dd;color:var(--ink)}#next{background:var(--az);color:#fff}
+nav.bot button:disabled{opacity:.4}
+#py{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;flex-direction:column}
+#py.on{display:flex}
+#py .top{background:var(--az);color:#fff;padding:10px 12px;display:flex;gap:8px;align-items:center}
+#py .top b{flex:1}
+#py .body{flex:1;overflow:auto;padding:12px;max-width:720px;width:100%;margin:0 auto}
+#ed{width:100%;min-height:38vh;font:16px/1.5 "Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;font-variant-ligatures:none;background:#0f1420;color:#e6e6e6;border:0;border-radius:12px;padding:12px;resize:vertical;tab-size:4}
+#pst{font-size:14px;color:var(--mut);margin:8px 0;min-height:20px}
+.aviso{font-size:13px;color:var(--mut)}
+</style></head><body>
+<header>
+  <div class="hrow"><span class="t" id="ht">📱 Python · Aulas 1 a 3</span><button class="ib" id="zm" aria-label="Diminuir letra">A−</button><button class="ib" id="zp" aria-label="Aumentar letra">A+</button><button class="ib py" id="abrePy">🐍 Python</button></div>
+  <div class="bar"><i id="pg"></i></div>
+</header>
+<main id="m"></main>
+<nav class="bot" id="nav" hidden><button id="prev">◀</button><button id="home" aria-label="Voltar ao início">☰ Blocos</button><button id="next">▶</button></nav>
+<div id="py" role="dialog" aria-label="Python no navegador">
+  <div class="top"><b>🐍 Python no navegador</b><button class="ib" id="fechaPy">✕ Fechar</button></div>
+  <div class="body">
+    <textarea id="ed" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Seu código"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn am" id="rodar" style="flex:1">▶ Rodar</button><button class="btn cl" id="tab" title="Inserir 4 espaços">⇥ Tab</button><button class="btn cl" id="limpar">Limpar</button></div>
+    <div id="pst"></div>
+    <pre class="o" id="saida" aria-live="polite"></pre>
+    <p class="aviso">O Python roda no seu navegador, sem conta e sem instalar nada. Na primeira vez baixa uns 6 MB; depois fica no cache. Quando o programa pede <code class="ic">input()</code>, aparece uma caixa para digitar. Um programa que passa de 5 segundos sem pedir nada é interrompido (laço infinito). Para os trabalhos da aula, continue usando o Google Colab.</p>
+  </div>
+</div>
+<script>
+const SLIDES = [{"b": "0", "tipo": "hero", "tempo": 2, "icone": "🧭", "kicker": "Complemento ao material", "titulo": "Antes do código", "sub": "Algoritmo · Portugol · como o computador entende · um pouco de história"}, {"b": "0", "tipo": "conteudo", "tempo": 5, "titulo": "Algoritmo: passos em ordem", "itens": ["Algoritmo é uma **sequência de passos** para resolver um problema", "Cada passo precisa ser **claro**: o computador não adivinha", "A **ordem** importa: trocar dois passos pode dar errado", "Programa = algoritmo escrito numa linguagem que o computador entende"]}, {"b": "0", "tipo": "quadro", "tempo": 5, "titulo": "Portugol × Python", "cards": [{"cab": "Portugol: mostrar", "code": "escreva(\"Olá\")", "lang": "txt"}, {"cab": "Python: mostrar", "code": "print(\"Olá\")", "res": "Olá"}, {"cab": "Portugol: ler um número", "code": "inteiro idade\nleia(idade)", "lang": "txt"}, {"cab": "Python: ler um número", "code": "idade = int(input())"}], "cols": 2, "nota": "Portugol é uma forma de escrever algoritmos **em português**, feita para aprender. As ideias são as mesmas; muda a escrita."}, {"b": "0", "tipo": "quadro", "tempo": 5, "titulo": "Do 0 e 1 até o Python", "cards": [{"cab": "Linguagem de máquina", "big": "0 e 1", "txt": "O processador entende direto. Quase impossível para pessoas."}, {"cab": "Baixo nível (Assembly)", "big": "MOV, ADD", "txt": "Comandos curtos, um para cada operação do processador."}, {"cab": "Alto nível", "big": "print(2 + 3)", "txt": "Perto da linguagem humana. Python e Java são de alto nível."}], "cols": 3, "nota": "Quanto mais **alto** o nível, mais fácil para pessoas e mais trabalho para o computador traduzir."}, {"b": "0", "tipo": "quadro", "tempo": 5, "titulo": "Compilada × interpretada", "cards": [{"cab": "Compilada (ex.: C)", "big": "📦", "txt": "Um **compilador** traduz o programa inteiro antes e gera um arquivo pronto para rodar."}, {"cab": "Interpretada (ex.: Python)", "big": "🗣️", "txt": "Um **interpretador** lê o programa e executa na hora. Por isso o Colab mostra o resultado logo."}], "cols": 2, "nota": "Comparação: o compilado é um livro **traduzido e impresso**; o interpretado é um **intérprete** traduzindo ao vivo."}, {"b": "0", "tipo": "caso", "tag": "Curiosidade", "tempo": 5, "titulo": "Um pouco de história", "historia": "O Python foi criado pelo holandês Guido van Rossum, no instituto CWI, na Holanda.", "dados": ["🎄 **Dez/1989**: começa a escrever o Python, nas férias de Natal", "📢 **Fev/1991**: publica a versão 0.9.0 na internet (Usenet)", "1️⃣ **Jan/1994**: sai o Python 1.0", "☕ **Mai/1995**: a Sun anuncia o Java · **Jan/1996**: sai o Java 1.0", "🐍 O nome vem do grupo de comédia britânico **Monty Python**, não da cobra"], "pergunta": "Quem é mais velho, o Python ou o Java?"}, {"b": "0", "tipo": "quiz", "tempo": 2, "titulo": "Quiz", "pergunta": "De onde vem o nome **Python**?", "opcoes": ["Um grupo de comédia britânico", "A cobra píton", "Uma sigla em inglês", "O sobrenome do criador"], "correta": 0, "explica": "Guido van Rossum lia os roteiros de **Monty Python's Flying Circus** (BBC) e queria um nome curto e diferente."}, {"b": "0", "tipo": "quiz", "tempo": 2, "titulo": "Quiz", "pergunta": "O Python é uma linguagem…", "opcoes": ["de alto nível e interpretada", "de máquina, feita de 0 e 1", "de baixo nível, como o Assembly", "que só funciona no Google Colab"], "correta": 0, "explica": "Python é **de alto nível** (perto da linguagem humana) e **interpretada** (um interpretador executa o código). O Colab é só um dos lugares onde ele roda."}, {"b": "A", "tipo": "hero", "tempo": 3, "icone": "🏁", "kicker": "Unidade · Introdução ao Python: desafios de programação", "titulo": "Competição de Programação", "sub": "Aula 1 · Google Colab e print()"}, {"b": "A", "tipo": "conteudo", "tempo": 2, "titulo": "O que vamos fazer hoje", "itens": ["Abrir o **Google Colab** e criar um caderno", "Usar `print()` para mostrar texto na tela", "Criar uma **variável** e usar ela dentro de um texto"]}, {"b": "A", "tipo": "conteudo", "tempo": 4, "titulo": "Google Colab", "itens": ["Roda Python **no navegador**, sem instalar nada", "O caderno (notebook) fica salvo no seu **Google Drive**", "Dois tipos de célula: **código** e **texto**", "O botão ▶ executa a célula · atalho: `Ctrl + Enter`"]}, {"b": "A", "tipo": "atividade", "tempo": 6, "titulo": "Criar o caderno", "passos": ["Acesse **colab.research.google.com** com sua conta Google", "Clique em **Novo notebook**", "No canto superior esquerdo, clique no nome **Untitled0**", "Renomeie para **Introdução ao Python**", "Repare na primeira célula de código, já pronta para uso"]}, {"b": "A", "tipo": "conteudo", "tempo": 4, "titulo": "print(): mostrar na tela", "itens": ["O que está **entre aspas** é texto (em inglês: *string*)", "Depois do ▶, o texto aparece embaixo da célula", "Aspas duplas `\" \"` ou simples `' '` funcionam"], "code": "print(\"I Competição de Programação da Start\")", "out": "I Competição de Programação da Start"}, {"b": "A", "tipo": "quiz", "tempo": 3, "titulo": "Quiz", "pergunta": "Qual dessas linhas dá erro?", "opcoes": ["print(\"Olá\")", "print('Olá')", "print(Olá)", "print(\"Olá\", \"turma\")"], "opcoes_code": true, "correta": 2, "explica": "Sem aspas, o Python acha que **Olá** é o nome de uma variável que não existe: `NameError: name 'Olá' is not defined`."}, {"b": "A", "tipo": "conteudo", "tempo": 5, "titulo": "Variável: um nome que guarda um valor", "itens": ["`ano = \"II\"` cria a variável **ano** e guarda o texto \"II\"", "O `=` aqui significa **guardar**, não \"é igual\"", "No `print`, a **vírgula** junta as partes e põe um espaço entre elas"], "code": "ano = \"II\"\nprint(ano, \"Competição de Programação da Start\")", "out": "II Competição de Programação da Start"}, {"b": "A", "tipo": "quadro", "tempo": 5, "titulo": "Duas formas de juntar variável e texto", "cards": [{"cab": "Com vírgula", "code": "print(ano, \"Competição de Programação da Start\")", "res": "II Competição de Programação da Start", "txt": "Põe espaço sozinho entre as partes"}, {"cab": "Com f-string", "code": "print(f\"{ano} Competição de Programação da Start\")", "res": "II Competição de Programação da Start", "txt": "Letra **f** antes das aspas + variável entre **chaves { }**"}], "nota": "⚠️ O material diz \"colchetes\", mas o símbolo certo são as **chaves { }**. Colchetes são **[ ]**."}, {"b": "A", "tipo": "quiz", "tempo": 3, "titulo": "Quiz", "pergunta": "O que aparece na tela?", "code": "nome = \"Ana\"\nprint(\"Oi, {nome}!\")", "opcoes": ["Oi, Ana!", "Oi, {nome}!", "Oi, nome!", "Dá erro"], "opcoes_code": true, "correta": 1, "explica": "Faltou a letra **f** antes das aspas. Sem ela, as chaves são só texto comum."}, {"b": "A", "tipo": "atividade", "tempo": 6, "titulo": "Sua vez", "passos": ["Crie a variável `nome` com o seu nome", "Use também a variável `ano` (\"II\")", "Com **f-string**, mostre: `Ana está na II Competição de Programação da Start`"], "resposta": "nome = \"Ana\"\nano = \"II\"\nprint(f\"{nome} está na {ano} Competição de Programação da Start\")", "out": "Ana está na II Competição de Programação da Start"}, {"b": "B", "tipo": "hero", "tempo": 1, "icone": "📚", "kicker": "Introdução ao Python: desafios de programação", "titulo": "Calculando pontos", "sub": "Aula 2 · variáveis com números e soma"}, {"b": "B", "tipo": "atividade", "tempo": 5, "titulo": "Organizar o caderno", "passos": ["Passe o mouse **acima da primeira célula** e clique em **+ Texto**", "Digite `## Aula 1`", "Abaixo do último código, crie outra célula de texto: `## Aula 2`", "`##` cria um título de nível 2 (linguagem **Markdown**)"]}, {"b": "B", "tipo": "caso", "tempo": 3, "titulo": "Campanha de leitura", "historia": "A escola dá pontos para cada livro lido. Os pontos viram prêmios.", "dados": ["📕 Ficção: **10 pontos**", "📗 Não-ficção: **8 pontos**", "📘 Infantil: **6 pontos**"], "pergunta": "Rodrigo leu **um livro de cada** categoria. Quantos pontos ele fez?"}, {"b": "B", "tipo": "conteudo", "tempo": 6, "titulo": "Números em variáveis", "itens": ["Número vai **sem aspas**", "Uma variável para cada categoria", "Outra variável guarda a **soma**"], "code": "livro_ficcao = 10\nlivro_nficcao = 8\nlivro_infantil = 6\n\npontos_rodrigo = livro_ficcao + livro_nficcao + livro_infantil\n\nprint(pontos_rodrigo)", "out": "24"}, {"b": "B", "tipo": "quadro", "tempo": 4, "titulo": "Número ou texto?", "cards": [{"cab": "Número + número", "code": "print(10 + 8)", "res": "18", "txt": "Soma"}, {"cab": "Texto + texto", "code": "print(\"10\" + \"8\")", "res": "108", "txt": "Junta os textos"}, {"cab": "Texto + número", "code": "print(\"10\" + 8)", "res": "TypeError: can only concatenate str (not \"int\") to str", "erro": true, "txt": "Não mistura"}]}, {"b": "B", "tipo": "conteudo", "tempo": 3, "titulo": "Mostrando o resultado com f-string", "itens": ["Mesma regra da aula 1: **f** antes das aspas", "A variável vai entre **chaves { }**"], "code": "print(f\"Os pontos totais do Rodrigo são: {pontos_rodrigo}\")", "out": "Os pontos totais do Rodrigo são: 24"}, {"b": "B", "tipo": "quadro", "tempo": 4, "titulo": "Regras para nomes de variáveis", "cards": [{"cab": "✅ Pode", "code": "livro_ficcao = 10", "txt": "Letras minúsculas e _"}, {"cab": "✅ Pode", "code": "pontos2 = 5", "txt": "Número no meio ou no fim"}, {"cab": "❌ Espaço", "code": "livro ficcao = 10", "res": "SyntaxError: invalid syntax", "erro": true}, {"cab": "❌ Começa com número", "code": "1livro = 10", "res": "SyntaxError: invalid decimal literal", "erro": true}], "nota": "O Python aceita acento (`ficção`), mas evite: dá trabalho digitar e confunde."}, {"b": "B", "tipo": "quiz", "tempo": 3, "titulo": "Quiz", "pergunta": "Rodrigo leu **2 livros de ficção** e **1 infantil**. Quanto vale `pontos`?", "code": "livro_ficcao = 10\nlivro_infantil = 6\npontos = 2 * livro_ficcao + livro_infantil", "opcoes": ["26", "16", "22", "18"], "correta": 0, "explica": "`*` é multiplicação e é feita antes da soma: 2 × 10 + 6 = **26**."}, {"b": "B", "tipo": "atividade", "tempo": 8, "titulo": "Desafio: a Bia", "passos": ["Bia leu **3 livros de não-ficção** e **2 infantis**", "Crie as variáveis com os pontos de cada categoria", "Calcule `pontos_bia`", "Mostre: `Os pontos da Bia são: 36`"], "resposta": "livro_nficcao = 8\nlivro_infantil = 6\n\npontos_bia = 3 * livro_nficcao + 2 * livro_infantil\n\nprint(f\"Os pontos da Bia são: {pontos_bia}\")", "out": "Os pontos da Bia são: 36"}, {"b": "C", "tipo": "hero", "tempo": 1, "icone": "🎴", "kicker": "Introdução ao Python: desafios de programação", "titulo": "Distribuindo itens", "sub": "Aula 3 · input(), int() e divisão"}, {"b": "C", "tipo": "caso", "tempo": 4, "titulo": "Divisão do tesouro (OBI 2020)", "historia": "A turma achou um envelope cheio de figurinhas. João, o dono, propôs:", "dados": ["Cada amigo recebe a **mesma quantidade**", "João recebe o **dobro** de um amigo", "A divisão é **exata**: não sobra nem falta"], "pergunta": "Sabendo o **total de figurinhas** e o **número de amigos** (sem contar João), quantas figurinhas João recebe?", "fonte": "Adaptado da Olimpíada Brasileira de Informática 2020 · Fase 1 · Nível Júnior"}, {"b": "C", "tipo": "quadro", "tempo": 6, "titulo": "Pensar antes de programar", "cards": [{"cab": "1. Cada amigo", "big": "x"}, {"cab": "2. João", "big": "2 · x"}, {"cab": "3. Total", "big": "(amigos + 2) · x", "txt": "amigos · x + 2 · x"}, {"cab": "4. Então", "big": "x = total ÷ (amigos + 2)"}], "nota": "Exemplo da OBI: **221** figurinhas e **11** amigos → 221 ÷ 13 = **17** por amigo → João recebe **34**. Confere: 11 × 17 + 34 = 221 ✓"}, {"b": "C", "tipo": "conteudo", "tempo": 5, "titulo": "input(): o programa pergunta", "itens": ["`input()` espera a pessoa digitar e apertar **Enter**", "O texto entre aspas aparece como pergunta", "`input()` **sempre devolve texto**: por isso usamos `int()` para virar número inteiro"], "code": "total_figurinhas = int(input(\"Digite o total de figurinhas: \"))\nnumero_amigos = int(input(\"Digite o número de amigos: \"))", "out": "Digite o total de figurinhas: 221\nDigite o número de amigos: 11"}, {"b": "C", "tipo": "quadro", "tempo": 4, "titulo": "Por que int()?", "cards": [{"cab": "Sem int()", "code": "print(\"11\" + 2)", "res": "TypeError: can only concatenate str (not \"int\") to str", "erro": true, "txt": "\"11\" é texto"}, {"cab": "Com int()", "code": "print(int(\"11\") + 2)", "res": "13", "txt": "Agora é número"}, {"cab": "Digitou letra", "code": "int(\"onze\")", "res": "ValueError: invalid literal for int() with base 10: 'onze'", "erro": true, "txt": "int() só converte dígitos"}]}, {"b": "C", "tipo": "quadro", "tempo": 2, "titulo": "Se você já viu Portugol", "cards": [{"cab": "Portugol", "code": "escreva(\"Olá\")", "lang": "txt"}, {"cab": "Python", "code": "print(\"Olá\")"}, {"cab": "Portugol", "code": "inteiro total\nleia(total)", "lang": "txt"}, {"cab": "Python", "code": "total = int(input())"}], "cols": 2, "nota": "Em Python não se declara o tipo antes. O `int()` faz a conversão na hora da leitura."}, {"b": "C", "tipo": "quadro", "tempo": 4, "titulo": "Operadores de conta", "cards": [{"cab": "+  soma", "code": "print(7 + 2)", "res": "9"}, {"cab": "-  subtração", "code": "print(7 - 2)", "res": "5"}, {"cab": "*  multiplicação", "code": "print(7 * 2)", "res": "14"}, {"cab": "/  divisão", "code": "print(7 / 2)", "res": "3.5"}, {"cab": "//  divisão inteira", "code": "print(7 // 2)", "res": "3"}, {"cab": "%  resto", "code": "print(7 % 2)", "res": "1"}], "cols": 3}, {"b": "C", "tipo": "conteudo", "tempo": 6, "titulo": "Programa completo", "itens": ["`//` dá a parte inteira da divisão", "João recebe `2 * figurinhas_amigos`"], "code": "total_figurinhas = int(input(\"Digite o total de figurinhas: \"))\nnumero_amigos = int(input(\"Digite o número de amigos: \"))\n\nfigurinhas_amigos = total_figurinhas // (numero_amigos + 2)\n\nfigurinhas_joao = 2 * figurinhas_amigos\n\nprint(f\"João recebeu {figurinhas_joao} figurinhas.\")", "out": "Digite o total de figurinhas: 221\nDigite o número de amigos: 11\nJoão recebeu 34 figurinhas."}, {"b": "C", "tipo": "quiz", "tempo": 3, "titulo": "Quiz", "pergunta": "Entrada: **1000** figurinhas e **8** amigos. Quanto João recebe?", "opcoes": ["200", "100", "125", "250"], "correta": 0, "explica": "1000 // (8 + 2) = **100** por amigo. João recebe 2 × 100 = **200**. (Exemplo oficial da OBI.)"}, {"b": "C", "tipo": "caso", "tempo": 4, "titulo": "E se a divisão não for exata?", "historia": "O material testa o programa com 100 figurinhas e 5 amigos:", "dados": ["100 // 7 = **14** → João recebe **28**", "5 × 14 + 28 = **98**", "100 % 7 = **2** → sobram 2 figurinhas"], "pergunta": "Isso quebra a regra do enunciado (\"não sobra nem falta\"). Que total, com 5 amigos, daria uma divisão exata?"}, {"b": "C", "tipo": "atividade", "tempo": 8, "titulo": "Desafio final", "passos": ["Teste seu programa com os exemplos oficiais da OBI:", "`221` e `11` → João recebe **34**", "`1000` e `8` → João recebe **200**", "`3` e `1` → João recebe **2**", "Extra: mostre também quanto **cada amigo** recebeu"], "resposta": "total_figurinhas = int(input(\"Digite o total de figurinhas: \"))\nnumero_amigos = int(input(\"Digite o número de amigos: \"))\n\nfigurinhas_amigos = total_figurinhas // (numero_amigos + 2)\nfigurinhas_joao = 2 * figurinhas_amigos\n\nprint(f\"João recebeu {figurinhas_joao} figurinhas.\")\nprint(f\"Cada amigo recebeu {figurinhas_amigos} figurinhas.\")", "out": "Digite o total de figurinhas: 3\nDigite o número de amigos: 1\nJoão recebeu 2 figurinhas.\nCada amigo recebeu 1 figurinhas."}, {"b": "D", "tipo": "hero", "tempo": 2, "icone": "🧪", "kicker": "Laboratório de programas", "titulo": "Programas de verdade", "sub": "Só com o que já sabemos: print, variáveis, contas e input"}, {"b": "D", "tipo": "conteudo", "tempo": 5, "titulo": "Quantos dias você já viveu?", "itens": ["`*` multiplica a idade por 365", "Dá um valor **aproximado**: alguns anos têm 366 dias", "Duas entradas: um texto e um número"], "code": "nome = input(\"Seu nome: \")\nidade = int(input(\"Sua idade: \"))\n\ndias = idade * 365\n\nprint(f\"{nome}, você já viveu mais ou menos {dias} dias!\")", "out": "Seu nome: Ana\nSua idade: 15\nAna, você já viveu mais ou menos 5475 dias!"}, {"b": "D", "tipo": "conteudo", "tempo": 6, "titulo": "Calculadora de média", "itens": ["`float()` aceita número com casas decimais, como `8.5`", "Parênteses: **primeiro soma**, depois divide", "`round(media, 1)` arredonda para 1 casa"], "code": "n1 = float(input(\"1ª nota: \"))\nn2 = float(input(\"2ª nota: \"))\nn3 = float(input(\"3ª nota: \"))\nn4 = float(input(\"4ª nota: \"))\n\nmedia = (n1 + n2 + n3 + n4) / 4\n\nprint(f\"Sua média é {round(media, 1)}\")", "out": "1ª nota: 7\n2ª nota: 8.5\n3ª nota: 6\n4ª nota: 9.5\nSua média é 7.8"}, {"b": "D", "tipo": "quadro", "tempo": 3, "titulo": "Ponto ou vírgula?", "cards": [{"cab": "Com ponto", "code": "print(float(\"8.5\"))", "res": "8.5", "txt": "O Python entende"}, {"cab": "Com vírgula", "code": "print(float(\"8,5\"))", "res": "ValueError: could not convert string to float: '8,5'", "erro": true, "txt": "Vírgula não é decimal no Python"}, {"cab": "int() com decimal", "code": "print(int(\"8.5\"))", "res": "ValueError: invalid literal for int() with base 10: '8.5'", "erro": true, "txt": "int() só aceita inteiro"}], "nota": "Regra para o resto do ano: em Python, **casa decimal é com ponto**: `8.5`, `9.75`."}, {"b": "D", "tipo": "quiz", "tempo": 3, "titulo": "Quiz", "pergunta": "Esqueceram os parênteses. Com as notas 7, 8.5, 6 e 9.5, quanto vale `media`?", "code": "media = n1 + n2 + n3 + n4 / 4", "opcoes": ["23.875", "7.75", "31.0", "7.8"], "correta": 0, "explica": "A divisão é feita antes da soma: só o `n4` é dividido. 7 + 8.5 + 6 + 2.375 = **23.875**. Por isso os parênteses em `(n1 + n2 + n3 + n4) / 4`."}, {"b": "D", "tipo": "conteudo", "tempo": 5, "titulo": "Tempo de jogo", "itens": ["1 hora = **3600** segundos", "`//` quantas horas inteiras cabem", "`%` o que sobrou vira minutos e segundos"], "code": "total = int(input(\"Tempo jogado em segundos: \"))\n\nhoras = total // 3600\nresto = total % 3600\nminutos = resto // 60\nsegundos = resto % 60\n\nprint(f\"Você jogou {horas}h {minutos}min {segundos}s\")", "out": "Tempo jogado em segundos: 5000\nVocê jogou 1h 23min 20s"}, {"b": "D", "tipo": "conteudo", "tempo": 5, "titulo": "Subindo de nível", "itens": ["Cada nível pede **1000 XP**", "`xp // 1000` conta os níveis completos", "`xp % 1000` é o XP do nível atual"], "code": "xp = int(input(\"Quanto XP você tem? \"))\n\nnivel = xp // 1000 + 1\nfalta = 1000 - xp % 1000\n\nprint(f\"Você está no nível {nivel}\")\nprint(f\"Faltam {falta} XP para o próximo nível\")", "out": "Quanto XP você tem? 3750\nVocê está no nível 4\nFaltam 250 XP para o próximo nível"}, {"b": "D", "tipo": "quadro", "tempo": 4, "titulo": "Spoiler da próxima unidade: ano bissexto", "cards": [{"cab": "2024", "big": "✅", "txt": "÷ 4 sobra **0** → bissexto"}, {"cab": "2026", "big": "❌", "txt": "÷ 4 sobra **2** → não é"}, {"cab": "1900", "big": "❌", "txt": "÷ 4 sobra 0, mas é ano de século (÷ 100 sobra 0) e ÷ 400 sobra **300**"}, {"cab": "2000", "big": "✅", "txt": "Ano de século, mas ÷ 400 sobra **0** → bissexto"}], "nota": "Regra: **divisível por 4** é bissexto, **menos** os anos terminados em 00, que só são bissextos se forem **divisíveis por 400**."}, {"b": "D", "tipo": "conteudo", "tempo": 5, "titulo": "O programa do ano bissexto", "itens": ["`if` = **se** · `else` = **senão**", "`==` **compara** (o `=` guarda)", "Linhas com recuo pertencem ao `if` ou ao `else`"], "code": "ano = int(input(\"Digite um ano: \"))\n\nif ano % 4 == 0 and (ano % 100 != 0 or ano % 400 == 0):\n    print(f\"{ano} é bissexto\")\nelse:\n    print(f\"{ano} não é bissexto\")", "out": "Digite um ano: 1900\n1900 não é bissexto"}, {"b": "D", "tipo": "hero", "tempo": 1, "icone": "🏆", "kicker": "Fase concluída", "titulo": "Missão cumprida", "sub": "print · variáveis · contas · input() · int() · float() · // e %"}], BLOCOS = [{"id": "0", "nome": "Aula 0 · Antes do código (complemento)"}, {"id": "A", "nome": "Aula 1 · Google Colab e print()"}, {"id": "B", "nome": "Aula 2 · Calculando pontos"}, {"id": "C", "nome": "Aula 3 · Distribuindo itens"}, {"id": "D", "nome": "Extra · Laboratório de programas"}], HASH = {"0": "f7499a7a8a1fbcc0535990feed6759f965f2a0b2916141587fee83cdf4d74c13", "A": "98abe0b92915c1fb98e569414672b89e5d2a3a2d62b78a5583b52de887b39639", "B": "91334d3579c365fcd6f5f897784ef33e977e9f5ad93664f95c0031272dd47477", "C": "143809c3bd44d9843ff6ffb07098f5465237c6a9574249e93ef9db9db6bdd0df", "D": "86d204cbbae3bd502c935f50aa333191cca6602bf38f988a3e6b20557a109081", "TODOS": "d1be335cf16a163a343f1a90b93387c1168b6956106983267a5b80ac944c0acf"}, SAL = 'aula_python_57_59';
+const PYO = 'https://cdn.jsdelivr.net/pyodide/v0.27.8/full/';
+/* ---------- compartilhado: realce de Python + renderização de slides + sincronização ---------- */
+const SYNC_KEY = 'aula_python_57_59_v1';
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function md(s) {
+  return esc(s)
+    .replace(/`([^`]+)`/g, '<code class="ic">$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+}
+
+const PY_KW = new Set(['if','else','elif','for','while','def','return','import','from','in','and','or','not','True','False','None']);
+const PY_BI = new Set(['print','input','int','str','float','len']);
+function hlStr(tok) {
+  const isF = /^[fF]/.test(tok);
+  const body = isF ? tok.slice(1) : tok;
+  let html = isF ? '<span class="t-kw">' + tok[0] + '</span>' : '';
+  if (!isF) return html + '<span class="t-str">' + esc(body) + '</span>';
+  return html + body.split(/(\{[^{}]*\})/).map(p =>
+    /^\{[^{}]*\}$/.test(p)
+      ? '<span class="t-brace">{</span><span class="t-var">' + esc(p.slice(1, -1)) + '</span><span class="t-brace">}</span>'
+      : '<span class="t-str">' + esc(p) + '</span>'
+  ).join('');
+}
+function hl(src) {
+  const re = /(#[^\n]*)|([fF]?"(?:[^"\\\n]|\\.)*"|[fF]?'(?:[^'\\\n]|\\.)*'|[fF]?"(?:[^"\\\n]|\\.)*|[fF]?'(?:[^'\\\n]|\\.)*)|([A-Za-z_À-ÿ][A-Za-z0-9_À-ÿ]*)|(\d+(?:\.\d+)?)|(\/\/|\*\*|==|!=|<=|>=)|([\s\S])/g;
+  let out = '', m;
+  while ((m = re.exec(src))) {
+    if (m[1]) out += '<span class="t-com">' + esc(m[1]) + '</span>';
+    else if (m[2]) out += hlStr(m[2]);
+    else if (m[3]) {
+      const w = m[3];
+      if (/^[fF]$/.test(w) && /["']/.test(src[re.lastIndex] || '')) { out += esc(w); }
+      else out += PY_KW.has(w) ? '<span class="t-kw">' + w + '</span>'
+        : PY_BI.has(w) ? '<span class="t-fn">' + w + '</span>'
+        : '<span class="t-id">' + esc(w) + '</span>';
+    }
+    else if (m[4]) out += '<span class="t-num">' + m[4] + '</span>';
+    else if (m[5]) out += '<span class="t-op">' + esc(m[5]) + '</span>';
+    else out += /[=+\-*/%<>]/.test(m[6]) ? '<span class="t-op">' + esc(m[6]) + '</span>' : esc(m[6]);
+  }
+  return out;
+}
+function codeBox(src, lang) {
+  const body = lang === 'txt' ? esc(src) : hl(src);
+  return '<div class="code"><div class="code-bar"><span class="play">▶</span><span class="lang">' + (lang === 'txt' ? 'Portugol' : 'Python') + '</span></div><pre>' + body + '</pre></div>';
+}
+function outBox(txt, isErr) {
+  return '<div class="out' + (isErr ? ' err' : '') + '"><span class="out-lbl">' + (isErr ? 'Erro' : 'Saída') + '</span><pre>' + esc(txt) + '</pre></div>';
+}
+
+function blocoNome(id) { const b = BLOCOS.find(x => x.id === id); return b ? b.nome : ''; }
+
+/* ---------- digitação do código ---------- */
+function temDigitacao(s) { return s.tipo === 'conteudo' && !!s.code; }
+function passosDigitacao(s) { const p = []; s.code.split('\n').forEach((l, k) => { if (l.trim()) p.push(k); }); return p; }
+function totalPassos(s) { return passosDigitacao(s).length + (s.out ? 1 : 0); }
+function codeDigitando(s, dig, animar) {
+  const linhas = s.code.split('\n'), p = passosDigitacao(s);
+  const ate = dig > 0 ? p[Math.min(dig, p.length) - 1] : -1, vis = [];
+  for (let k = 0; k <= ate; k++) {
+    if (animar && dig <= p.length && k === ate) vis.push('<span class="tw" data-t="' + esc(linhas[k]) + '" data-h="' + esc(hl(linhas[k])) + '"></span>');
+    else vis.push(hl(linhas[k]));
+  }
+  const live = vis.join('\n') + (dig < p.length ? '<span class="caret">▌</span>' : '');
+  let html = '<div class="code"><div class="code-bar"><span class="play">▶</span><span class="lang">Python</span></div><pre class="stack"><span class="ghost">' + hl(s.code) + '</span><span class="live">' + live + '</span></pre></div>';
+  if (s.out) html += outBox(s.out).replace('class="out"', 'class="out ' + (dig > p.length ? 'out-in' : 'out-ghost') + '"');
+  return html;
+}
+function renderSlide(s, idx, revealed, dig, animar) {
+  const n = idx + 1, total = SLIDES.length;
+  const head = s.tipo === 'hero' ? '' :
+    '<div class="s-head"><span class="s-bloco">' + esc(blocoNome(s.b)) + '</span><span class="s-num">' + n + ' / ' + total + '</span></div>';
+  let body = '';
+  if (s.tipo === 'hero') {
+    body = '<div class="hero"><div class="hero-ico">' + s.icone + '</div><div class="hero-k">' + md(s.kicker) + '</div><h1>' + md(s.titulo) + '</h1><div class="hero-sub">' + md(s.sub) + '</div></div>';
+  } else if (s.tipo === 'conteudo') {
+    const itens = '<ul class="itens">' + s.itens.map(i => '<li>' + md(i) + '</li>').join('') + '</ul>';
+    if (s.code) {
+      const cod = dig === undefined || dig === null ? codeBox(s.code) + (s.out ? outBox(s.out) : '') : codeDigitando(s, dig, animar);
+      body = '<h2>' + md(s.titulo) + '</h2><div class="cols' + (s.code.split('\n').length > 3 ? ' wide-code' : '') + '"><div>' + itens + '</div><div>' + cod + '</div></div>';
+    } else body = '<h2>' + md(s.titulo) + '</h2>' + itens.replace('class="itens"', 'class="itens big"');
+  } else if (s.tipo === 'caso') {
+    body = '<h2><span class="tag tag-caso">' + esc(s.tag || 'Situação-problema') + '</span> ' + md(s.titulo) + '</h2>' +
+      '<div class="caso"><p class="hist">' + md(s.historia) + '</p><ul class="dados">' + s.dados.map(d => '<li>' + md(d) + '</li>').join('') + '</ul>' +
+      '<div class="perg">❓ ' + md(s.pergunta) + '</div>' + (s.fonte ? '<div class="fonte">' + md(s.fonte) + '</div>' : '') + '</div>';
+  } else if (s.tipo === 'quadro') {
+    const cols = s.cols || Math.min(s.cards.length, 4);
+    body = '<h2>' + md(s.titulo) + '</h2><div class="quadro" style="grid-template-columns:repeat(' + cols + ',1fr)">' +
+      s.cards.map(c => '<div class="card' + (c.erro ? ' card-err' : '') + '"><div class="card-cab">' + md(c.cab) + '</div>' +
+        (c.big ? '<div class="card-big">' + esc(c.big) + '</div>' : '') +
+        (c.code ? codeBox(c.code, c.lang) : '') + (c.res ? outBox(c.res, c.erro) : '') +
+        (c.txt ? '<div class="card-txt">' + md(c.txt) + '</div>' : '') + '</div>').join('') + '</div>' +
+      (s.nota ? '<div class="nota">' + md(s.nota) + '</div>' : '');
+  } else if (s.tipo === 'atividade') {
+    const passos = '<ol class="passos">' + s.passos.map(p => '<li>' + md(p) + '</li>').join('') + '</ol>';
+    const resp = s.resposta ? (revealed ? '<div class="resp"><div class="resp-lbl">✅ Uma resposta possível</div>' + codeBox(s.resposta) + outBox(s.out) + '</div>'
+      : '<div class="resp-wait">🔒 A resposta aparece no final</div>') : '';
+    body = '<h2><span class="tag tag-ativ">Mãos no código · ' + s.tempo + ' min</span> ' + md(s.titulo) + '</h2>' +
+      (s.resposta ? '<div class="cols"><div>' + passos + '</div><div>' + resp + '</div></div>' : passos);
+  } else if (s.tipo === 'quiz') {
+    const L = 'ABCD';
+    const ops = '<div class="ops">' + s.opcoes.map((o, k) => {
+      const cls = revealed ? (k === s.correta ? ' ok' : ' no') : '';
+      return '<div class="op' + cls + '"><span class="op-l">' + L[k] + '</span>' + (s.opcoes_code ? '<code class="op-c">' + esc(o) + '</code>' : '<span>' + esc(o) + '</span>') + '</div>';
+    }).join('') + '</div>';
+    body = '<h2><span class="tag tag-quiz">Quiz</span> ' + md(s.pergunta) + '</h2>' +
+      (s.code ? '<div class="cols quiz-cols"><div>' + codeBox(s.code) + '</div><div>' + ops + '</div></div>' : ops) +
+      (revealed ? '<div class="explica">💡 ' + md(s.explica) + '</div>' : '');
+  }
+  return '<div class="slide t-' + s.tipo + '">' + head + '<div class="s-body"><div class="s-inner">' + body + '</div></div></div>';
+}
+
+/* reduz o conteúdo se não couber no slide (rede de segurança) */
+function fitBody(root) {
+  const b = root.querySelector('.s-body'), inn = root.querySelector('.s-inner');
+  if (!b || !inn) return;
+  let z = 1; inn.style.zoom = 1;
+  while (inn.getBoundingClientRect().height > b.getBoundingClientRect().height + 1 && z > 0.66) { z -= 0.03; inn.style.zoom = z; }
+}
+/* --- estado compartilhado: slide atual, respostas reveladas, linhas digitadas --- */
+function salvar(p) { st = writeSync(Object.assign({ i: st.i || 0, rev: st.rev || {}, dig: st.dig || {} }, p)); return st; }
+function digDe(x, i) { return (x.dig || {})[i] || 0; }
+function avancar() {
+  const i = st.i || 0, s = SLIDES[i], d = digDe(st, i);
+  if (temDigitacao(s) && d < totalPassos(s)) { const D = Object.assign({}, st.dig || {}); D[i] = d + 1; return salvar({ dig: D }); }
+  return i < SLIDES.length - 1 ? salvar({ i: i + 1 }) : st;
+}
+function voltar() { const i = st.i || 0; return i > 0 ? salvar({ i: i - 1 }) : st; }
+function irPara(i) { return salvar({ i: Math.max(0, Math.min(SLIDES.length - 1, i)) }); }
+function alternarRev() { const rev = Object.assign({}, st.rev || {}); rev[st.i || 0] = !rev[st.i || 0]; return salvar({ rev }); }
+function definirDig(v) { const D = Object.assign({}, st.dig || {}); D[st.i || 0] = v; return salvar({ dig: D }); }
+/* --- sincronização entre as duas janelas (mesma pasta, mesmo navegador) --- */
+function readSync() {
+  try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || { i: 0, rev: {}, t: 0 }; }
+  catch (e) { return { i: 0, rev: {}, t: 0 }; }
+}
+function writeSync(st) {
+  st.t = Date.now();
+  try { localStorage.setItem(SYNC_KEY, JSON.stringify(st)); } catch (e) {}
+  return st;
+}
+function onSync(cb) {
+  let last = -1;
+  const check = () => { const st = readSync(); if (st.t !== last) { last = st.t; cb(st); } };
+  window.addEventListener('storage', e => { if (e.key === SYNC_KEY) check(); });
+  setInterval(check, 500);
+  check();
+}
+
+const KEY = 'aluno_python_57_59', $ = s => document.querySelector(s);
+let st = { lib: {}, i: null, ans: {}, z: 1, cod: '' };
+try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
+const salvarA = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+const doBloco = id => SLIDES.map((s, k) => [s, k]).filter(([s]) => s.b === id).map(([, k]) => k);
+const norm = c => String(c).toUpperCase().normalize('NFD').replace(/[^A-Z0-9]/g, '');
+async function sha(t) { const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join(''); }
+
+/* ---------- tela inicial: blocos ---------- */
+function inicio() {
+  st.i = null; salvarA(); $('#nav').hidden = true; $('#pg').style.width = '0';
+  let h = '<h1>Python · Aulas 1 a 3</h1><p>Cada bloco abre com o <b>código que o professor escreve no quadro</b>. Siga no seu ritmo, responda aos quizzes e teste os programas no 🐍 Python.</p>';
+  BLOCOS.forEach(b => {
+    const ks = doBloco(b.id), qz = ks.filter(k => SLIDES[k].tipo === 'quiz'), feitos = qz.filter(k => k in st.ans), certos = qz.filter(k => st.ans[k] === SLIDES[k].correta);
+    h += '<div class="pn bl"><span class="nm">' + (st.lib[b.id] ? '🔓 ' : '🔒 ') + esc(b.nome) + '</span>';
+    if (st.lib[b.id]) h += '<span class="st">' + ks.length + ' telas' + (qz.length ? ' · quizzes: ' + certos.length + ' certos de ' + qz.length + (feitos.length < qz.length ? ' (' + (qz.length - feitos.length) + ' sem responder)' : '') : '') + '</span><button class="btn" data-abre="' + b.id + '">Abrir</button>';
+    else h += '<div class="row"><input data-cod="' + b.id + '" placeholder="Código do quadro" autocomplete="off" autocapitalize="characters" aria-label="Código do bloco ' + esc(b.nome) + '"><button class="btn am" data-lib="' + b.id + '">Liberar</button></div><span class="msg" id="msg-' + b.id + '"></span>';
+    h += '</div>';
+  });
+  h += '<div class="pn"><b>Links</b><p style="margin:6px 0 0"><a href="guia.html">📖 Guia do Jogador</a> · <a href="jogo.html">🐉 Jogo</a> · <a href="index.html">🏠 Site</a></p></div>';
+  $('#m').innerHTML = h; scrollTo(0, 0);
+}
+async function liberar(id) {
+  const inp = document.querySelector('[data-cod="' + id + '"]'), m = $('#msg-' + id), c = norm(inp.value);
+  if (!c) { m.className = 'msg no'; m.textContent = 'Digite o código.'; return; }
+  if (!window.crypto || !crypto.subtle) { m.className = 'msg no'; m.textContent = 'Abra pelo link do site (https).'; return; }
+  if (await sha(SAL + '|TODOS|' + c) === HASH.TODOS) { BLOCOS.forEach(b => st.lib[b.id] = true); salvarA(); inicio(); return; }
+  if (await sha(SAL + '|' + id + '|' + c) === HASH[id]) { st.lib[id] = true; salvarA(); abrir(doBloco(id)[0]); return; }
+  m.className = 'msg no'; m.textContent = 'Código não confere. Confira no quadro.';
+}
+$('#m').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.lib) liberar(t.dataset.lib);
+  else if (t.dataset.abre) abrir(doBloco(t.dataset.abre)[0]);
+  else if (t.dataset.op !== undefined) responder(+t.dataset.op);
+  else if (t.dataset.run !== undefined) abrirPy(RUNS[+t.dataset.run]);
+});
+$('#m').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.cod) liberar(e.target.dataset.cod); });
+
+/* ---------- telas da aula ---------- */
+let RUNS = [];
+function cod(src, lang) {
+  if (lang === 'txt') return '<div class="code"><div class="cb"><span>Portugol</span></div><pre>' + esc(src) + '</pre></div>';
+  RUNS.push(src);
+  return '<div class="code"><div class="cb"><span>Python</span><button class="run" data-run="' + (RUNS.length - 1) + '">▶ Testar no Python</button></div><pre>' + hl(src) + '</pre></div>';
+}
+const saidaBox = (t, err) => '<pre class="o' + (err ? ' err' : '') + '">' + esc(t) + '</pre>';
+function tela(s, i) {
+  RUNS = [];
+  if (s.tipo === 'hero') return '<div class="hero"><div class="ic">' + s.icone + '</div><div class="k">' + md(s.kicker) + '</div><h1>' + md(s.titulo) + '</h1><div class="sub">' + md(s.sub) + '</div></div>';
+  if (s.tipo === 'conteudo') return '<h2>' + md(s.titulo) + '</h2><ul class="it">' + s.itens.map(t => '<li>' + md(t) + '</li>').join('') + '</ul>' +
+    (s.code ? cod(s.code) + (s.out ? '<details><summary>Pense antes: o que aparece? Ver a saída</summary>' + saidaBox(s.out) + '</details>' : '') : '');
+  if (s.tipo === 'caso') return '<span class="tag tg-caso">' + esc(s.tag || 'Situação-problema') + '</span><h2>' + md(s.titulo) + '</h2><p>' + md(s.historia) + '</p><ul class="it">' + s.dados.map(t => '<li>' + md(t) + '</li>').join('') + '</ul><div class="perg">❓ ' + md(s.pergunta) + '</div>';
+  if (s.tipo === 'quadro') return '<h2>' + md(s.titulo) + '</h2>' + s.cards.map(c => '<div class="card' + (c.erro ? ' err' : '') + '"><div class="cab">' + md(c.cab) + '</div>' +
+    (c.big ? '<div class="big">' + esc(c.big) + '</div>' : '') + (c.code ? cod(c.code, c.lang) : '') + (c.res ? saidaBox(c.res, c.erro) : '') + (c.txt ? '<div>' + md(c.txt) + '</div>' : '') + '</div>').join('') +
+    (s.nota ? '<div class="nota">' + md(s.nota) + '</div>' : '');
+  if (s.tipo === 'atividade') return '<span class="tag tg-at">Mãos no código · ' + s.tempo + ' min</span><h2>' + md(s.titulo) + '</h2><ol>' + s.passos.map(t => '<li>' + md(t) + '</li>').join('') + '</ol>' +
+    (s.resposta ? '<details><summary>Já tentei. Ver uma resposta possível</summary>' + cod(s.resposta) + saidaBox(s.out) + '</details>' : '');
+  if (s.tipo === 'quiz') {
+    const r = st.ans[i], L = 'ABCD';
+    return '<span class="tag tg-q">Quiz</span><h2>' + md(s.pergunta) + '</h2>' + (s.code ? cod(s.code) : '') + '<div class="ops">' +
+      s.opcoes.map((o, k) => '<button class="op' + (r === undefined ? '' : k === s.correta ? ' ok' : k === r ? ' no' : '') + '" data-op="' + k + '"' + (r === undefined ? '' : ' disabled') + '><b>' + L[k] + '</b><span>' + (s.opcoes_code ? '<code class="ic">' + esc(o) + '</code>' : esc(o)) + '</span></button>').join('') + '</div>' +
+      (r === undefined ? '' : '<div class="exp">' + (r === s.correta ? '✅ Isso.' : '❌ Não é essa.') + ' ' + md(s.explica) + '</div>');
+  }
+  return '';
+}
+function abrir(i) {
+  st.i = i; salvarA();
+  const s = SLIDES[i], ks = doBloco(s.b), p = ks.indexOf(i), b = BLOCOS.find(x => x.id === s.b);
+  $('#m').innerHTML = '<div class="meta"><span>' + esc(b.nome) + '</span><span>' + (p + 1) + ' / ' + ks.length + '</span></div>' + tela(s, i);
+  $('#nav').hidden = false; $('#pg').style.width = (100 * (p + 1) / ks.length) + '%';
+  $('#prev').disabled = p === 0;
+  $('#next').textContent = p === ks.length - 1 ? 'Fim do bloco ✔' : '▶';
+  scrollTo(0, 0);
+}
+function responder(k) { const i = st.i; if (i === null || i in st.ans) return; st.ans[i] = k; salvarA(); abrir(i); }
+function passo(d) {
+  if (st.i === null) return;
+  const ks = doBloco(SLIDES[st.i].b), p = ks.indexOf(st.i) + d;
+  if (p < 0) return; if (p >= ks.length) return inicio(); abrir(ks[p]);
+}
+$('#prev').onclick = () => passo(-1); $('#next').onclick = () => passo(1); $('#home').onclick = inicio;
+$('#zp').onclick = () => { st.z = Math.min(1.6, +(st.z + .1).toFixed(1)); salvarA(); document.documentElement.style.setProperty('--z', st.z); };
+$('#zm').onclick = () => { st.z = Math.max(.8, +(st.z - .1).toFixed(1)); salvarA(); document.documentElement.style.setProperty('--z', st.z); };
+let x0 = null, y0 = null;
+addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+addEventListener('touchend', e => { if (x0 === null || st.i === null || $('#py').classList.contains('on')) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; if (Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy)) passo(dx < 0 ? 1 : -1); x0 = null; });
+
+/* ---------- Python no navegador (Pyodide) ---------- */
+const PREP = `
+import builtins, sys, time, traceback
+from js import prompt as _jsprompt
+_lim = [0.0]
+def _input(p=''):
+    p = str(p)
+    sys.stdout.write(p); sys.stdout.flush()
+    v = _jsprompt(p if p else 'Digite a entrada:')
+    if v is None:
+        raise KeyboardInterrupt('entrada cancelada')
+    print(v)
+    _lim[0] = time.time() + 5
+    return v
+builtins.input = _input
+def _tr(frame, ev, arg):
+    if time.time() > _lim[0]:
+        raise TimeoutError('o programa passou de 5 segundos sem terminar (laço infinito?)')
+    return _tr
+def _rodar(src):
+    try:
+        c = compile(src, '<seu código>', 'exec')
+    except SyntaxError as e:
+        sys.stderr.write(''.join(traceback.format_exception_only(type(e), e)))
+        return
+    g = {'__name__': '__main__'}
+    _lim[0] = time.time() + 5
+    sys.settrace(_tr)
+    try:
+        exec(c, g)
+    except BaseException as e:
+        sys.settrace(None)
+        fr = [f for f in traceback.extract_tb(e.__traceback__) if f.filename == '<seu código>']
+        msg = ('Traceback (most recent call last):\\n' + ''.join(traceback.format_list(fr))) if fr else ''
+        sys.stderr.write(msg + ''.join(traceback.format_exception_only(type(e), e)))
+    finally:
+        sys.settrace(None)
+        sys.stdout.flush(); sys.stderr.flush()
+`;
+let py = null, carregando = null;
+function carregarPy() {
+  if (py) return Promise.resolve(py);
+  if (carregando) return carregando;
+  carregando = new Promise((ok, no) => {
+    const s = document.createElement('script'); s.src = PYO + 'pyodide.js';
+    s.onload = async () => { try { const p = await loadPyodide({ indexURL: PYO }); p.runPython(PREP); py = p; ok(p); } catch (e) { no(e); } };
+    s.onerror = () => no(new Error('sem conexão'));
+    document.head.appendChild(s);
+  }).catch(e => { carregando = null; throw e; });
+  return carregando;
+}
+function escrever(cls) { const dec = new TextDecoder(); return { write: buf => { const t = dec.decode(buf, { stream: true }); const sp = document.createElement('span'); if (cls) sp.style.color = '#c0392b'; sp.textContent = t; $('#saida').appendChild(sp); return buf.length; } }; }
+function abrirPy(src) {
+  if (typeof src === 'string') { $('#ed').value = src; st.cod = src; salvarA(); }
+  else if (!$('#ed').value) $('#ed').value = st.cod || 'nome = input("Seu nome: ")\nprint(f"Olá, {nome}!")';
+  $('#py').classList.add('on'); carregarPy().then(() => { if (!$('#pst').dataset.busy) $('#pst').textContent = 'Pronto.'; }).catch(() => {});
+  if (!py) $('#pst').textContent = '⏳ Baixando o Python (≈6 MB, só na primeira vez)…';
+}
+$('#abrePy').onclick = () => abrirPy(); $('#fechaPy').onclick = () => $('#py').classList.remove('on');
+$('#ed').addEventListener('input', () => { st.cod = $('#ed').value; salvarA(); });
+$('#tab').onclick = () => { const e = $('#ed'), a = e.selectionStart; e.setRangeText('    ', a, e.selectionEnd, 'end'); e.focus(); st.cod = e.value; salvarA(); };
+$('#ed').addEventListener('keydown', e => { if (e.key === 'Tab') { e.preventDefault(); $('#tab').onclick(); } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('#rodar').onclick(); } });
+$('#limpar').onclick = () => { $('#saida').textContent = ''; $('#pst').textContent = ''; };
+$('#rodar').onclick = async () => {
+  const pst = $('#pst'); pst.dataset.busy = '1';
+  $('#saida').textContent = '';
+  if (!py) pst.textContent = '⏳ Baixando o Python (≈6 MB, só na primeira vez)…';
+  try { await carregarPy(); }
+  catch (e) { delete pst.dataset.busy; pst.textContent = '❌ Não deu para baixar o Python. Confira a internet e tente de novo.'; return; }
+  pst.textContent = '▶ Rodando…'; $('#rodar').disabled = true;
+  await new Promise(r => setTimeout(r, 30));
+  py.setStdout(escrever(false)); py.setStderr(escrever(true));
+  const t0 = performance.now();
+  try { py.globals.get('_rodar')($('#ed').value); }
+  catch (e) { const sp = document.createElement('span'); sp.style.color = '#c0392b'; sp.textContent = String(e); $('#saida').appendChild(sp); }
+  $('#rodar').disabled = false; delete pst.dataset.busy;
+  pst.textContent = '✔ Terminou em ' + Math.round(performance.now() - t0) + ' ms.';
+};
+
+document.documentElement.style.setProperty('--z', st.z);
+if (st.i !== null && SLIDES[st.i] && st.lib[SLIDES[st.i].b]) abrir(st.i); else inicio();
+</script></body></html>
