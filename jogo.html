@@ -48,7 +48,10 @@ input.t:focus,select.t:focus{outline:none;border-color:var(--gold)}
 .notabox{display:flex;justify-content:space-between;align-items:center;background:var(--pn2);border-radius:14px;padding:12px 14px;margin:14px 0}
 .notabox b{font-size:26px;color:var(--gold)}
 .hud{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.hearts{font-size:24px;letter-spacing:2px}
+.hearts{font-size:22px;letter-spacing:1px;white-space:nowrap}
+.hud .qn,.hud .xp,#paraMapa{white-space:nowrap}
+#paraMapa{padding:7px 10px}
+@media (max-width:400px){.hearts{font-size:18px;letter-spacing:0}.hud{gap:6px}.hud .xp{padding:5px 9px;font-size:15px}.hud .qn{font-size:14px}#paraMapa{font-size:14px;padding:6px 8px}}
 .xp{background:var(--pn2);border-radius:999px;padding:6px 12px;font-weight:800;color:var(--gold)}
 .qn{color:var(--mut);font-weight:700;font-size:15px}
 .arena{display:flex;align-items:center;gap:12px;background:var(--pn);border:2px solid #3a3358;border-radius:18px;padding:12px 14px;margin-bottom:12px}
@@ -476,16 +479,23 @@ function telaInicio() {
 /* ---------- mapa ---------- */
 function telaMapa() {
   topo();
-  const st = estrelas(), nota = calcNota(st);
+  const st = estrelas(), nota = calcNota(st), run = save.run;
   app.innerHTML = `<div class="hud"><span class="qn">${HEROIS[meta.hero || 0].e} ${esc(meta.id.nome.split(' ')[0])}</span><span class="xp">⭐ ${totalXP()} XP</span></div>
   <h1 style="font-size:32px">Mapa da Dungeon</h1><p class="sub">Toque no andar com borda amarela para jogar.</p>
-  <div class="map">${ANDARES.map((a, i) => { const lock = a.id > save.lib, s = st[i], nx = a.id === save.lib && !s, t = (save.andares[a.id] || {}).tent || 0;
-    return `<button class="floor ${lock ? 'lock' : ''} ${nx ? 'next' : ''}" data-a="${a.id}" ${lock ? 'disabled' : ''}><span class="fi">${lock ? '🔒' : a.icone}</span><span class="ft"><b>${a.id}. ${a.nome}</b><small>${a.tema}${t ? ' · ' + t + (t > 1 ? ' tentativas' : ' tentativa') : ''}</small>${nx ? '<br><span class="cta">👉 Jogar agora</span>' : ''}</span><span class="st">${'★'.repeat(s)}${'☆'.repeat(3 - s)}</span></button>`; }).join('')}</div>
+  <div class="map">${ANDARES.map((a, i) => { const lock = a.id > save.lib, s = st[i], ativo = run && run.aid === a.id, nx = ativo || (!run && a.id === save.lib && !s), t = (save.andares[a.id] || {}).tent || 0;
+    return `<button class="floor ${lock ? 'lock' : ''} ${nx ? 'next' : ''}" data-a="${a.id}" ${lock ? 'disabled' : ''}><span class="fi">${lock ? '🔒' : a.icone}</span><span class="ft"><b>${a.id}. ${a.nome}</b><small>${a.tema}${t ? ' · ' + t + (t > 1 ? ' tentativas' : ' tentativa') : ''}</small>${ativo ? `<br><span class="cta">▶ Continuar · ${'❤️'.repeat(run.vidas)}${'🖤'.repeat(3 - run.vidas)} · golpe ${Math.min(run.acertos + 1, run.total)}/${run.total}</span>` : nx ? '<br><span class="cta">👉 Jogar agora</span>' : ''}</span><span class="st">${'★'.repeat(s)}${'☆'.repeat(3 - s)}</span></button>`; }).join('')}</div>
   <div class="notabox"><span>Nota sugerida até agora</span><b>${fmtNota(nota)} / 10</b></div>
-  <button class="btn ${save.fim ? '' : 'sec'} full" id="placar">📸 ${save.fim ? 'Ver e baixar meu placar final' : 'Baixar placar parcial'}</button>
+  ${run ? '<button class="btn sec full" id="placar" disabled>📸 Placar: termine o andar em andamento</button>' : `<button class="btn ${save.fim ? '' : 'sec'} full" id="placar">📸 ${save.fim ? 'Ver e baixar meu placar final' : 'Baixar placar parcial'}</button>`}
   <p class="foot">Cada andar concluído vale até 2,5 pontos: ★ 1,5 · ★★ 2,0 · ★★★ 2,5.<br>Dá para rejogar um andar para melhorar as estrelas.</p>`;
-  app.querySelectorAll('.floor:not([disabled])').forEach(b => b.onclick = () => iniciar(+b.dataset.a));
-  $('#placar').onclick = telaPlacar;
+  app.querySelectorAll('.floor:not([disabled])').forEach(b => b.onclick = () => {
+    const id = +b.dataset.a;
+    if (!run) return iniciar(id);
+    if (run.aid === id) return telaPergunta();
+    const atual = ANDARES.find(a => a.id === run.aid);
+    modal('Abandonar o andar?', '<p>Você está no meio do andar <b>' + esc(atual.nome) + '</b>. Se começar outro andar agora, perde essa tentativa.</p>',
+      [{ t: '▶ Voltar ao ' + atual.nome, cls: 'sec', fn: telaPergunta }, { t: 'Abandonar', cls: 'red', fn: () => iniciar(id) }]);
+  });
+  if (!run) $('#placar').onclick = telaPlacar;
 }
 
 /* ---------- batalha ---------- */
@@ -499,7 +509,7 @@ function iniciar(id) {
 }
 function hud() {
   const r = save.run, a = andarAtual(), pct = 100 * (r.total - r.acertos) / r.total;
-  return `<div class="hud"><span class="hearts" aria-label="${r.vidas} vidas">${'❤️'.repeat(r.vidas)}${'🖤'.repeat(3 - r.vidas)}</span><span class="qn">Golpe ${Math.min(r.acertos + 1, r.total)}/${r.total}</span><span class="xp">⭐ ${r.xp}</span></div>
+  return `<div class="hud"><span class="hearts" aria-label="${r.vidas} vidas">${'❤️'.repeat(r.vidas)}${'🖤'.repeat(3 - r.vidas)}</span><span class="qn">Golpe ${Math.min(r.acertos + 1, r.total)}/${r.total}</span><span class="xp">⭐ ${r.xp}</span><button class="icon-btn" id="paraMapa">🗺️ Mapa</button></div>
   <div class="arena"><span class="foe" id="foe">${a.ini_ico}</span><div class="foe-info"><b>${a.inimigo}</b> <small style="color:var(--mut)">· ${a.nome}</small><div class="bar"><i style="width:${pct}%"></i></div></div><span style="font-size:34px">${HEROIS[meta.hero || 0].e}</span></div>`;
 }
 const codeHtml = src => '<div class="code"><pre>' + hl(src) + '</pre></div>';
@@ -523,6 +533,7 @@ function telaPergunta() {
     corpo = inp + '<div class="pz-lbl">Peças (toque para encaixar)</div><div class="pz" id="pool"></div><div class="pz-lbl">Seu programa (toque para tirar)</div><div class="pz ans" id="ans"></div><button class="btn full" id="testar" style="margin-top:12px">▶ Executar</button>';
   }
   app.innerHTML = hud() + `<div class="qcard" id="qcard"><span class="qtype">${TIPO[q.tipo]}</span><p class="qtxt">${esc(perg)}</p>${corpo}<div id="fb"></div></div>`;
+  $('#paraMapa').onclick = telaMapa;
   if (q.tipo === 'parsons') { drawPz(q); $('#testar').onclick = () => { if (r.pz.pool.length) { pop('Encaixe todas as peças'); return; } responder(q.aceitas.includes(r.pz.ans.join('')), q); }; }
   else if (q.tipo === 'bug' || q.tipo === 'logica') app.querySelectorAll('.ln').forEach(b => b.onclick = () => { const i = +b.dataset.i, ok = i === q.c; app.querySelectorAll('.ln').forEach(x => x.disabled = true); b.classList.add(ok ? 'ok' : 'no'); if (!ok) app.querySelector(`.ln[data-i="${q.c}"]`).classList.add('ok'); responder(ok, q); });
   else app.querySelectorAll('.op').forEach(b => b.onclick = () => { const i = +b.dataset.i, ok = i === q.c; if (q.tipo === 'lacuna') $('#slot').textContent = q.ops[i]; app.querySelectorAll('.op').forEach(x => x.disabled = true); b.classList.add(ok ? 'ok' : 'no'); if (!ok) app.querySelector(`.op[data-i="${q.c}"]`).classList.add('ok'); responder(ok, q, i); });
@@ -797,7 +808,7 @@ function telaRestaurar() {
 let saiuEm = 0, pegadinhaAtiva = false, ultimaPegadinha = 0, ignorarSaidaAte = 0, seletorAberto = false, passeLivre = false;
 const AVISOS = 4;
 const TITULOS = ['👀 Saiu da tela, é?', '🤨 De novo?!', '🕵️ Te peguei mais uma vez!', '☠️ Quarta vez…'];
-const emBatalha = () => document.body.classList.contains('batalha') && !!save.run;
+const emBatalha = () => !!save.run && !!meta.id;
 function marcarSaida() { if (!saiuEm && emBatalha()) saiuEm = Date.now(); }
 function voltou() {
   if (!saiuEm || document.hidden || !document.hasFocus()) return;   /* mouse passando sobre a janela sem foco não conta como volta */
