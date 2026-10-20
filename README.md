@@ -3,7 +3,7 @@
 <!-- Se o endereço abaixo não for o do seu site, edite só esta linha. -->
 **Site:** https://charltonjulio-sudo.github.io/Jogospython/index.html
 
-**Formulário de entrega:** (cole aqui o link de edição do Google Forms, se quiser tê-lo à mão; ele só abre para a sua conta)
+**Formulário de entrega:** 
 
 Site das três primeiras aulas de Python (Google Colab, print, variáveis, contas, input e divisão inteira): guia de estudo, jogo valendo nota, aula no celular e área do professor.
 
