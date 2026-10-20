@@ -1,7 +1,7 @@
 # Python Nível 1 · Educação Digital
 
 <!-- Se o endereço abaixo não for o do seu site, edite só esta linha. -->
-**Site:** [https://charltonjulio-sudo.github.io/Jogospython/index.html]
+**Site:** https://charltonjulio-sudo.github.io/Jogospython/index.html
 
 **Formulário de entrega:** (cole aqui o link de edição do Google Forms, se quiser tê-lo à mão; ele só abre para a sua conta)
 
